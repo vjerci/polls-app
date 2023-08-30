@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/db"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/util/login"
 )
 
@@ -16,23 +17,27 @@ type LoginData struct {
 
 var ErrLoginUserIDNotSet = errors.New("user id not set")
 var ErrLoginUserNotFound = errors.New("user with given id does not exist")
+var ErrLoginUserGetUser = errors.New("getting user failed")
+var ErrLoginCreateToken = errors.New("create token failed")
 
-func (client *Client) Login(data LoginData) (login.AccessToken, error) {
-	// if data.UserID == "" {
-	// 	return "", ErrLoginUserIDNotSet
-	// }
-
-	// name, err := client.UserDB.GetUser(data.UserID)
-	// if err != nil {
-	// 	if errors.Is(err, db.ErrUserNoRows) {
-	// 		return "", ErrLoginUserNotFound
-	// 	}
-	// }
-
-	token, err := client.LoginDB.CreateToken(data.UserID)
-	if err != nil {
-		return "", errors.Join(ErrLoginUserIDNotSet, err)
+func (client *Client) Login(data LoginData) (token login.AccessToken, name string, err error) {
+	if data.UserID == "" {
+		return "", "", ErrLoginUserIDNotSet
 	}
 
-	return token, nil
+	name, err = client.UserDB.GetUser(data.UserID)
+	if err != nil {
+		if errors.Is(err, db.ErrGetUserNoRows) {
+			return "", "", ErrLoginUserNotFound
+		}
+
+		return "", "", errors.Join(ErrLoginUserGetUser, err)
+	}
+
+	token, err = client.LoginDB.CreateToken(data.UserID)
+	if err != nil {
+		return "", "", errors.Join(ErrLoginCreateToken, err)
+	}
+
+	return token, name, nil
 }

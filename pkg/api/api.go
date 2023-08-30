@@ -36,7 +36,8 @@ func (e ErrorUserVisible) Unwrap() error {
 }
 
 type Factory interface {
-	Register(repo RegisterRepository) echo.HandlerFunc
+	Register(model RegisterModel) echo.HandlerFunc
+	LoginModel(login LoginModel) echo.HandlerFunc
 }
 
 type FactoryImplementation struct{}

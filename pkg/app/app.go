@@ -25,11 +25,13 @@ func New(settings config.Config) (*echo.Echo, error) {
 	modelClient := &model.Client{
 		RegisterDB: dbClient,
 		LoginDB:    loginClient,
+		UserDB:     dbClient,
 	}
 	apiClient := api.New()
 
 	routeHandler := route.Handler{
 		Register: apiClient.Register(modelClient),
+		Login:    apiClient.Login(modelClient),
 	}
 
 	return routeHandler.Build(), nil

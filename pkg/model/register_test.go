@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/db"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/util/login"
 )
 
 type MockRegisterDB struct {
@@ -22,23 +21,12 @@ func (mock *MockRegisterDB) CreateUser(userID string, Name string) error {
 	return mock.ResponseError
 }
 
-type MockLoginDB struct {
-	UserID              string
-	ResponseAccessToken login.AccessToken
-	ResponseError       error
-}
-
-func (mock *MockLoginDB) CreateToken(userID string) (login.AccessToken, error) {
-	mock.UserID = userID
-	return mock.ResponseAccessToken, mock.ResponseError
-}
-
 func TestRegisterErrorHandling(t *testing.T) {
 	testCases := []struct {
 		ExpectedError  error
 		Input          model.RegistrationData
-		RegisterDBMock MockRegisterDB
-		LoginDBMock    MockLoginDB
+		RegisterDBMock *MockRegisterDB
+		LoginDBMock    *MockLoginDB
 	}{
 		{
 			ExpectedError: model.ErrRegisterUserIDNotSet,
@@ -46,8 +34,8 @@ func TestRegisterErrorHandling(t *testing.T) {
 				UserID: "",
 				Name:   "name",
 			},
-			RegisterDBMock: MockRegisterDB{},
-			LoginDBMock:    MockLoginDB{},
+			RegisterDBMock: &MockRegisterDB{},
+			LoginDBMock:    &MockLoginDB{},
 		},
 
 		{
@@ -56,8 +44,8 @@ func TestRegisterErrorHandling(t *testing.T) {
 				UserID: "userID",
 				Name:   "",
 			},
-			RegisterDBMock: MockRegisterDB{},
-			LoginDBMock:    MockLoginDB{},
+			RegisterDBMock: &MockRegisterDB{},
+			LoginDBMock:    &MockLoginDB{},
 		},
 		{
 			ExpectedError: model.ErrRegisterDuplicate,
@@ -65,10 +53,10 @@ func TestRegisterErrorHandling(t *testing.T) {
 				UserID: "userID",
 				Name:   "name",
 			},
-			RegisterDBMock: MockRegisterDB{
-				ResponseError: db.ErrRegisterInsertCount,
+			RegisterDBMock: &MockRegisterDB{
+				ResponseError: db.ErrCreateUserInsertCount,
 			},
-			LoginDBMock: MockLoginDB{},
+			LoginDBMock: &MockLoginDB{},
 		},
 		{
 			ExpectedError: model.ErrRegisterCreateUserFailed,
@@ -76,10 +64,10 @@ func TestRegisterErrorHandling(t *testing.T) {
 				UserID: "userID",
 				Name:   "name",
 			},
-			RegisterDBMock: MockRegisterDB{
+			RegisterDBMock: &MockRegisterDB{
 				ResponseError: errors.New("db error"),
 			},
-			LoginDBMock: MockLoginDB{},
+			LoginDBMock: &MockLoginDB{},
 		},
 		{
 			ExpectedError: model.ErrRegisterCreateAccessToken,
@@ -87,10 +75,10 @@ func TestRegisterErrorHandling(t *testing.T) {
 				UserID: "userID",
 				Name:   "name",
 			},
-			RegisterDBMock: MockRegisterDB{
+			RegisterDBMock: &MockRegisterDB{
 				ResponseError: nil,
 			},
-			LoginDBMock: MockLoginDB{
+			LoginDBMock: &MockLoginDB{
 				ResponseError: errors.New("db error"),
 			},
 		},
@@ -98,8 +86,8 @@ func TestRegisterErrorHandling(t *testing.T) {
 
 	for _, test := range testCases {
 		client := model.Client{
-			RegisterDB: &test.RegisterDBMock,
-			LoginDB:    &test.LoginDBMock,
+			RegisterDB: test.RegisterDBMock,
+			LoginDB:    test.LoginDBMock,
 		}
 
 		token, err := client.Register(test.Input)

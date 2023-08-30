@@ -95,7 +95,7 @@ func TestRegisterSuccessful(t *testing.T) {
 	}
 	expectedResponse := `{"success":true,"data":"testToken"}` + "\n"
 
-	req := httptest.NewRequest(echo.GET, "http://localhost/register", strings.NewReader(input))
+	req := httptest.NewRequest(echo.PUT, "http://localhost/register", strings.NewReader(input))
 	rec := httptest.NewRecorder()
 
 	e := echo.New()

@@ -10,7 +10,7 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/util/login"
 )
 
-type RegisterRepository interface {
+type RegisterModel interface {
 	Register(model.RegistrationData) (login.AccessToken, error)
 }
 
@@ -22,7 +22,7 @@ var ErrRegisterUserDuplicate = &ErrorUserVisible{Err: model.ErrRegisterDuplicate
 
 var ErrRegisterModel = errors.New("model failed to register")
 
-func (api *FactoryImplementation) Register(repo RegisterRepository) echo.HandlerFunc {
+func (api *FactoryImplementation) Register(repo RegisterModel) echo.HandlerFunc {
 	return func(c echo.Context) error {
 
 		var data model.RegistrationData

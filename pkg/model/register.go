@@ -35,7 +35,7 @@ func (client *Client) Register(data RegistrationData) (login.AccessToken, error)
 
 	err := client.RegisterDB.CreateUser(data.UserID, data.Name)
 	if err != nil {
-		if errors.Is(err, db.ErrRegisterInsertCount) {
+		if errors.Is(err, db.ErrCreateUserInsertCount) {
 			return "", errors.Join(ErrRegisterDuplicate, err)
 		}
 

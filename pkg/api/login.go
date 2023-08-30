@@ -10,7 +10,7 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/util/login"
 )
 
-type LoginRepository interface {
+type LoginModel interface {
 	Login(data model.LoginData) (accessToken login.AccessToken, name string, err error)
 }
 
@@ -18,7 +18,9 @@ var ErrLoginJsonDecode = &ErrorUserVisible{Err: errors.New("failed to decode log
 var ErrLoginUserDoesNotExist = &ErrorUserVisible{Err: model.ErrLoginUserNotFound, Status: http.StatusNotFound}
 var ErrLoginUserIDNotSet = &ErrorUserVisible{Err: model.ErrLoginUserIDNotSet, Status: http.StatusBadRequest}
 
-func Login(repo LoginRepository) echo.HandlerFunc {
+var ErrorLoginModel = errors.New("couldn't get user and token from model")
+
+func (factory *FactoryImplementation) Login(repo LoginModel) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var data model.LoginData
 		err := json.NewDecoder(c.Request().Body).Decode(&data)
@@ -36,7 +38,7 @@ func Login(repo LoginRepository) echo.HandlerFunc {
 				}
 			}
 
-			return errors.Join(ErrRegisterModel, err)
+			return errors.Join(ErrorLoginModel, err)
 		}
 
 		return c.JSON(http.StatusOK, ApiResponse{

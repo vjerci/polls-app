@@ -8,6 +8,7 @@ import (
 
 type Handler struct {
 	Register echo.HandlerFunc
+	Login    echo.HandlerFunc
 }
 
 func (handler *Handler) Build() *echo.Echo {
@@ -29,6 +30,7 @@ func (handler *Handler) Build() *echo.Echo {
 
 	auth := endpoint.Group("/auth")
 	auth.PUT("/register", handler.Register)
+	auth.POST("/login", handler.Login)
 
 	return router
 }

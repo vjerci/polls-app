@@ -1,0 +1,7 @@
+services:
+  example-app:
+    build: .
+    ports:
+      - "8000:8000"
+  postgre:
+    image: postgres:15.4-alpine3.18

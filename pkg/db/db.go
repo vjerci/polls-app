@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -26,13 +25,13 @@ func New(postgresURL string) *Client {
 func (client *Client) Connect() error {
 	conn, err := pgxpool.New(context.Background(), client.PostgresURL)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrConnect, err)
+		return errors.Join(ErrConnect, err)
 	}
 
 	client.Pool = conn
 
 	if err = client.Pool.Ping(context.Background()); err != nil {
-		return fmt.Errorf("%w: %w", ErrPing, err)
+		return errors.Join(ErrPing, err)
 	}
 
 	return nil

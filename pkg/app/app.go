@@ -2,7 +2,6 @@ package app
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/api"
@@ -19,7 +18,7 @@ func New(settings config.Config) (*echo.Echo, error) {
 	dbClient := db.New(settings.PostgresURL)
 	err := dbClient.Connect()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrDbConnect, err)
+		return nil, errors.Join(ErrDbConnect, err)
 	}
 
 	loginClient := login.New(settings.JWTSigningKey)

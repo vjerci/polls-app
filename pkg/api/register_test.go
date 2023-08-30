@@ -44,14 +44,6 @@ func TestRegisterErrorHandling(t *testing.T) {
 			},
 		},
 		{
-			ExpectedError: api.ErrRegisterGroupIDNotSet,
-			Input:         `{}`,
-			Model: &MockRegisterModel{
-				ResponseToken: "",
-				ResponseError: model.ErrRegisterGroupIDNotSet,
-			},
-		},
-		{
 			ExpectedError: api.ErrRegisterNameNotSet,
 			Input:         `{}`,
 			Model: &MockRegisterModel{

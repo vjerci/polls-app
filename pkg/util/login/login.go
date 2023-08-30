@@ -26,43 +26,41 @@ func New(JWTSigningKey string) *Client {
 
 type AccessToken string
 
-func (client *Client) CreateToken(userID string, groupID string) (AccessToken, error) {
+func (client *Client) CreateToken(userID string) (AccessToken, error) {
 	t := jwt.NewWithClaims(SigningMethod,
 		jwt.MapClaims{
-			"user_id":  userID,
-			"group_id": groupID,
+			"user_id": userID,
 		})
 	s, err := t.SignedString(client.JWTSigningKey)
 	if err != nil {
-		return "", fmt.Errorf("%w: %w", ErrSigningFailed, err)
+		return "", errors.Join(ErrSigningFailed, err)
 	}
 
 	return AccessToken(s), nil
 }
 
-func (client *Client) Decode(input AccessToken) (userID, groupID string, err error) {
+func (client *Client) Decode(input AccessToken) (userID string, err error) {
 	token, err := jwt.Parse(string(input), func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("%w: signing method is %v", ErrDecodeUnexpectedSignMethod, token.Header["alg"])
+			return nil, fmt.Errorf("%w\n signing method is %v", ErrDecodeUnexpectedSignMethod, token.Header["alg"])
 		}
 
 		return client.JWTSigningKey, nil
 	})
 
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	if !token.Valid {
-		return "", "", ErrDecodeInvalidToken
+		return "", ErrDecodeInvalidToken
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		userID = claims["user_id"].(string)
-		groupID = claims["group_id"].(string)
 
-		return userID, groupID, nil
+		return userID, nil
 	}
 
-	return "", "", ErrDecodeClaimsMissing
+	return "", ErrDecodeClaimsMissing
 }

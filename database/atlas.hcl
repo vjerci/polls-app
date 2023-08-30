@@ -1,11 +1,9 @@
 schema "public" {}
 
+// varchars for ids are used to simplify app login it should probabbly be uuid
 table "users" {
   schema = schema.public
   column "id" {
-    type = varchar(255)
-  }
-  column "group_id" {
     type = varchar(255)
   }
   column "name" {
@@ -14,13 +12,11 @@ table "users" {
   primary_key {
     columns = [
       column.id,
-      column.group_id
     ]
   }
   index "idx_unique_constraint" {
     columns = [
       column.id,
-      column.group_id,
     ]
     unique = true
   }

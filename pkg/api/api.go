@@ -12,22 +12,27 @@ type ApiResponse struct {
 	Error   *string     `json:"error,omitempty"`
 }
 
-type ErrorClientVisible struct {
+// ErrorUserVisible is used for showing errors to users for easier api usage, they also enhance error messages with status code
+type ErrorUserVisible struct {
 	Err    error
 	Status int
 }
 
-func (e *ErrorClientVisible) Error() string {
+func (e *ErrorUserVisible) Error() string {
 	return e.Err.Error()
 }
 
-func (e *ErrorClientVisible) Is(target error) bool {
-	targetErrorClientVisible, ok := target.(*ErrorClientVisible)
+func (e *ErrorUserVisible) Is(target error) bool {
+	targetErrorUserVisible, ok := target.(*ErrorUserVisible)
 	if ok {
-		return errors.Is(e.Err, target) && targetErrorClientVisible.Status == e.Status
+		return errors.Is(e.Err, target) && targetErrorUserVisible.Status == e.Status
 	}
 
 	return errors.Is(e.Err, target)
+}
+
+func (e ErrorUserVisible) Unwrap() error {
+	return e.Err
 }
 
 type Factory interface {

@@ -1,0 +1,17 @@
+linters:
+    enable-all: true
+    disable:
+        - tagliatelle
+        - depguard
+        - gofumpt
+        - gochecknoglobals
+        - nonamedreturns
+        - wrapcheck
+        - exhaustruct
+        - goerr113
+issues:
+    exclude-rules:
+        - path: _test\.go
+          linters:
+              - funlen
+              - exhaustivestruct

@@ -11,14 +11,15 @@ var ErrConnect = errors.New("unable to connect to postgres")
 var ErrPing = errors.New("unable to ping postgres")
 
 type Client struct {
-	// urlExample := "postgres://username:password@localhost:5432/database_name"
 	PostgresURL string
 	Pool        *pgxpool.Pool
 }
 
+// postgresURL := "postgres://username:password@localhost:5432/database_name"
 func New(postgresURL string) *Client {
 	return &Client{
 		PostgresURL: postgresURL,
+		Pool:        nil,
 	}
 }
 

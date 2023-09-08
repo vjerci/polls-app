@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
 )
 
 type MockLoginDB struct {
@@ -18,6 +18,7 @@ type MockLoginDB struct {
 
 func (mock *MockLoginDB) CreateToken(userID string) (login.AccessToken, error) {
 	mock.UserID = userID
+
 	return mock.ResponseAccessToken, mock.ResponseError
 }
 
@@ -29,19 +30,22 @@ type MockUserDB struct {
 
 func (mock *MockUserDB) GetUser(userID string) (string, error) {
 	mock.UserID = userID
+
 	return mock.ResponseName, mock.ResponseError
 }
 
-func TestLoginErrorHandling(t *testing.T) {
+func TestLoginErrors(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		ExpectedError error
-		Input         model.LoginData
+		Input         *model.LoginRequest
 		UserDBMock    *MockUserDB
 		LoginDBMock   *MockLoginDB
 	}{
 		{
 			ExpectedError: model.ErrLoginUserIDNotSet,
-			Input: model.LoginData{
+			Input: &model.LoginRequest{
 				UserID: "",
 			},
 			UserDBMock:  &MockUserDB{},
@@ -49,7 +53,7 @@ func TestLoginErrorHandling(t *testing.T) {
 		},
 		{
 			ExpectedError: model.ErrLoginUserNotFound,
-			Input: model.LoginData{
+			Input: &model.LoginRequest{
 				UserID: "userID",
 			},
 			UserDBMock: &MockUserDB{
@@ -59,8 +63,8 @@ func TestLoginErrorHandling(t *testing.T) {
 			LoginDBMock: &MockLoginDB{},
 		},
 		{
-			ExpectedError: model.ErrLoginUserGetUser,
-			Input: model.LoginData{
+			ExpectedError: model.ErrLoginUserGet,
+			Input: &model.LoginRequest{
 				UserID: "userID",
 			},
 			UserDBMock: &MockUserDB{
@@ -71,7 +75,7 @@ func TestLoginErrorHandling(t *testing.T) {
 		},
 		{
 			ExpectedError: model.ErrLoginCreateToken,
-			Input: model.LoginData{
+			Input: &model.LoginRequest{
 				UserID: "userID",
 			},
 			UserDBMock: &MockUserDB{
@@ -90,46 +94,49 @@ func TestLoginErrorHandling(t *testing.T) {
 			UserDB:  test.UserDBMock,
 		}
 
-		token, name, err := client.Login(test.Input)
+		resp, err := client.Login(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
 		}
 
-		assert.EqualValues(t, "", token, "expected token to be empty")
-		assert.EqualValues(t, "", name, "expected name to be empty")
+		if resp != nil {
+			t.Fatalf("expected resp to be nil got  %v instead", resp)
+		}
 	}
 }
 
 func TestLoginSuccess(t *testing.T) {
+	t.Parallel()
+
 	userDBMock := &MockUserDB{
 		ResponseError: nil,
 		ResponseName:  "Jhon",
 	}
 
-	loginDbMock := &MockLoginDB{
+	loginDBMock := &MockLoginDB{
 		ResponseError:       nil,
 		ResponseAccessToken: "testToken",
 	}
 
 	client := model.Client{
 		UserDB:  userDBMock,
-		LoginDB: loginDbMock,
+		LoginDB: loginDBMock,
 	}
 
-	input := model.LoginData{
+	input := &model.LoginRequest{
 		UserID: "userID",
 	}
 
-	token, name, err := client.Login(input)
+	resp, err := client.Login(input)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)
 	}
 
 	assert.EqualValues(t, input.UserID, userDBMock.UserID, "expected input user_id to be passed to userDB")
-	assert.EqualValues(t, loginDbMock.UserID, input.UserID, "expected input's user_id to be passed to loginDB")
+	assert.EqualValues(t, loginDBMock.UserID, input.UserID, "expected input's user_id to be passed to loginDB")
 
-	assert.EqualValues(t, userDBMock.ResponseName, name, "expected returned name to match response from userDB")
-	assert.EqualValues(t, loginDbMock.ResponseAccessToken, token, "expected token to match response from loginDB")
+	assert.EqualValues(t, userDBMock.ResponseName, resp.Name, "expected returned name to match response from userDB")
+	assert.EqualValues(t, loginDBMock.ResponseAccessToken, resp.Token, "expected token to match response from loginDB")
 }

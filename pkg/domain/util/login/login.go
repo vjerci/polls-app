@@ -7,30 +7,28 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var ErrSigningFailed = errors.New("failed to sign claims")
-var ErrDecodeUnexpectedSignMethod = errors.New("unexpected signing method")
-var ErrDecodeClaimsMissing = errors.New("missing claims from token")
-var ErrDecodeInvalidToken = errors.New("got invalid token")
-
-var SigningMethod = jwt.SigningMethodHS256
+var signingMethod = jwt.SigningMethodHS256
 
 type Client struct {
 	JWTSigningKey []byte
 }
 
-func New(JWTSigningKey string) *Client {
+func New(jwtSigningKey string) *Client {
 	return &Client{
-		JWTSigningKey: []byte(JWTSigningKey),
+		JWTSigningKey: []byte(jwtSigningKey),
 	}
 }
 
 type AccessToken string
 
+var ErrSigningFailed = errors.New("failed to sign claims")
+
 func (client *Client) CreateToken(userID string) (AccessToken, error) {
-	t := jwt.NewWithClaims(SigningMethod,
+	t := jwt.NewWithClaims(signingMethod,
 		jwt.MapClaims{
 			"user_id": userID,
 		})
+
 	s, err := t.SignedString(client.JWTSigningKey)
 	if err != nil {
 		return "", errors.Join(ErrSigningFailed, err)
@@ -38,6 +36,11 @@ func (client *Client) CreateToken(userID string) (AccessToken, error) {
 
 	return AccessToken(s), nil
 }
+
+var ErrDecodeUnexpectedSignMethod = errors.New("unexpected signing method")
+var ErrDecodeClaimsMissing = errors.New("missing claims from token")
+var ErrDecodeInvalidToken = errors.New("got invalid token")
+var ErrDecodeUserIDNotString = errors.New("user id is not of type string")
 
 func (client *Client) Decode(input AccessToken) (userID string, err error) {
 	token, err := jwt.Parse(string(input), func(token *jwt.Token) (interface{}, error) {
@@ -57,7 +60,10 @@ func (client *Client) Decode(input AccessToken) (userID string, err error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		userID = claims["user_id"].(string)
+		userID, ok := claims["user_id"].(string)
+		if !ok {
+			return "", ErrDecodeUserIDNotString
+		}
 
 		return userID, nil
 	}

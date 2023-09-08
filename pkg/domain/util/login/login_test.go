@@ -4,13 +4,15 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
 )
 
-var SigningKey = "y5XYbfKoqOqGa+XVggMZs4yvcE6SwWS9Q9UBZviMw0A="
+var signingKey = "y5XYbfKoqOqGa+XVggMZs4yvcE6SwWS9Q9UBZviMw0A="
 
 func TestCreateToken(t *testing.T) {
-	loginClient := login.New(SigningKey)
+	t.Parallel()
+
+	loginClient := login.New(signingKey)
 	token, err := loginClient.CreateToken("userID")
 
 	if err != nil {
@@ -23,9 +25,11 @@ func TestCreateToken(t *testing.T) {
 }
 
 func TestDecodeToken(t *testing.T) {
+	t.Parallel()
+
 	startingUserID := "userID"
 
-	loginClient := login.New(SigningKey)
+	loginClient := login.New(signingKey)
 	token, err := loginClient.CreateToken(startingUserID)
 
 	if err != nil {

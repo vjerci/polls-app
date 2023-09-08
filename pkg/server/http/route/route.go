@@ -1,7 +1,7 @@
 package route
 
 import (
-	"github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
 )
@@ -18,6 +18,7 @@ func (handler *Handler) Build() *echo.Echo {
 	router.Use(middleware.Gzip())
 
 	if config.Get().Debug {
+		//nolint:exhaustivestruct
 		router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: []string{"*"},
 			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAcceptEncoding},

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
 type MockRegisterDB struct {
@@ -15,22 +15,25 @@ type MockRegisterDB struct {
 	ResponseError error
 }
 
-func (mock *MockRegisterDB) CreateUser(userID string, Name string) error {
+func (mock *MockRegisterDB) CreateUser(userID string, name string) error {
 	mock.UserID = userID
-	mock.Name = Name
+	mock.Name = name
+
 	return mock.ResponseError
 }
 
-func TestRegisterErrorHandling(t *testing.T) {
+func TestRegisterErrors(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		ExpectedError  error
-		Input          model.RegistrationData
+		Input          *model.RegisterRequest
 		RegisterDBMock *MockRegisterDB
 		LoginDBMock    *MockLoginDB
 	}{
 		{
 			ExpectedError: model.ErrRegisterUserIDNotSet,
-			Input: model.RegistrationData{
+			Input: &model.RegisterRequest{
 				UserID: "",
 				Name:   "name",
 			},
@@ -40,7 +43,7 @@ func TestRegisterErrorHandling(t *testing.T) {
 
 		{
 			ExpectedError: model.ErrRegisterNameNotSet,
-			Input: model.RegistrationData{
+			Input: &model.RegisterRequest{
 				UserID: "userID",
 				Name:   "",
 			},
@@ -49,7 +52,7 @@ func TestRegisterErrorHandling(t *testing.T) {
 		},
 		{
 			ExpectedError: model.ErrRegisterDuplicate,
-			Input: model.RegistrationData{
+			Input: &model.RegisterRequest{
 				UserID: "userID",
 				Name:   "name",
 			},
@@ -60,7 +63,7 @@ func TestRegisterErrorHandling(t *testing.T) {
 		},
 		{
 			ExpectedError: model.ErrRegisterCreateUserFailed,
-			Input: model.RegistrationData{
+			Input: &model.RegisterRequest{
 				UserID: "userID",
 				Name:   "name",
 			},
@@ -71,7 +74,7 @@ func TestRegisterErrorHandling(t *testing.T) {
 		},
 		{
 			ExpectedError: model.ErrRegisterCreateAccessToken,
-			Input: model.RegistrationData{
+			Input: &model.RegisterRequest{
 				UserID: "userID",
 				Name:   "name",
 			},
@@ -101,6 +104,8 @@ func TestRegisterErrorHandling(t *testing.T) {
 }
 
 func TestRegisterSuccess(t *testing.T) {
+	t.Parallel()
+
 	registerDBMock := &MockRegisterDB{
 		ResponseError: nil,
 	}
@@ -115,7 +120,7 @@ func TestRegisterSuccess(t *testing.T) {
 		LoginDB:    loginDBMock,
 	}
 
-	input := model.RegistrationData{
+	input := &model.RegisterRequest{
 		UserID: "userID",
 		Name:   "name",
 	}

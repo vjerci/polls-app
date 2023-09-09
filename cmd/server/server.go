@@ -8,10 +8,10 @@ import (
 )
 
 func main() {
-	err := config.Setup()
-	if err != nil {
+	if err := config.Setup(); err != nil {
 		panic(fmt.Errorf("failed to setup config %w", err))
 	}
+
 	settings := config.Get()
 
 	server, err := app.New(settings)
@@ -19,7 +19,7 @@ func main() {
 		panic(fmt.Errorf("failed to build server %w", err))
 	}
 
-	err = server.Start(settings.Port)
+	err = server.Start(settings.HTTPPort)
 	if err != nil {
 		panic(fmt.Errorf("server running error  %w", err))
 	}

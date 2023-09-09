@@ -40,7 +40,6 @@ var ErrLoginUserIDNotSet = &UserVisibleError{
 var convertedLoginErrors = []*UserVisibleError{
 	ErrLoginUserDoesNotExist,
 	ErrLoginUserIDNotSet,
-	ErrLoginJSONDecode,
 }
 
 var ErrLoginJSONDecode = &UserVisibleError{

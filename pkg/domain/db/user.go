@@ -12,7 +12,7 @@ var ErrGetUserQueryFailed = errors.New("execution of get user query failed")
 
 func (client *Client) GetUser(userID string) (name string, err error) {
 	var rowName string
-	err = client.Pool.QueryRow(context.Background(), "SELECT name FROM users WHERE id=$1", userID).Scan(&rowName)
+	err = client.Pool.QueryRow(context.Background(), "SELECT name FROM users WHERE id=$1;", userID).Scan(&rowName)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

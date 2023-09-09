@@ -9,7 +9,7 @@ import (
 	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
-func TestLoginErrorHandling(t *testing.T) {
+func TestLoginErrors(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {

@@ -7,12 +7,14 @@ import (
 
 var ErrPostgresURLEmpty = errors.New("postgres url is not specified")
 var ErrJWTKeyEmpty = errors.New("jwt private key is not specified")
-var ErrPortEmpty = errors.New("port is not specified")
+var ErrHTTPPortEmpty = errors.New("http port is not specified")
+var ErrGRPCPortEmpty = errors.New("grpc port is not specified")
 
 var config Config
 
 type Config struct {
-	Port          string
+	HTTPPort      string
+	GRPCPort      string
 	PostgresURL   string
 	JWTSigningKey string
 	Debug         bool
@@ -34,16 +36,22 @@ func Setup() error {
 		return ErrJWTKeyEmpty
 	}
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		return ErrPortEmpty
+	httpPort := os.Getenv("HTTP_PORT")
+	if httpPort == "" {
+		return ErrHTTPPortEmpty
+	}
+
+	grpcPort := os.Getenv("GRPC_PORT")
+	if grpcPort == "" {
+		return ErrGRPCPortEmpty
 	}
 
 	config = Config{
 		PostgresURL:   postgres,
 		JWTSigningKey: jwt,
 		Debug:         debug,
-		Port:          ":" + port,
+		HTTPPort:      ":" + httpPort,
+		GRPCPort:      grpcPort,
 	}
 
 	return nil

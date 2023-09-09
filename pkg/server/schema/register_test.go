@@ -10,7 +10,7 @@ import (
 	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
-func TestRegisterErrorHandling(t *testing.T) {
+func TestRegisterErrors(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -61,7 +61,7 @@ func TestRegisterInputConversion(t *testing.T) {
 	assert.EqualValues(t, input.Name, converted.Name, "expected names to match")
 }
 
-func TestRegisterOutputConversion(t *testing.T) {
+func TestRegisterResponseConversion(t *testing.T) {
 	t.Parallel()
 
 	output := login.AccessToken("test")

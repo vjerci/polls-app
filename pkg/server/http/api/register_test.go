@@ -1,107 +1,96 @@
 package api_test
 
-// import (
-// 	"errors"
-// 	"net/http"
-// 	"net/http/httptest"
-// 	"strings"
-// 	"testing"
+import (
+	"errors"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
 
-// 	echo "github.com/labstack/echo/v4"
-// 	"github.com/stretchr/testify/assert"
-// 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
-// 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
-// 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/connector"
-// 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
-// )
+	echo "github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
+)
 
-// type MockRegisterConnector struct {
-// 	ResponseData  string
-// 	ResponseError error
-// 	InputData     model.RegistrationData
-// 	RegisterModel connector.RegisterModel
-// }
+type MockRegisterModel struct {
+	InputData     *model.RegisterRequest
+	ResponseData  login.AccessToken
+	ResponseError error
+}
 
-// func (mock *MockRegisterConnector) Register(
-// 	registerModel connector.RegisterModel,
-// 	input model.RegistrationData,
-// ) (string, error) {
-// 	mock.InputData = input
-// 	mock.RegisterModel = registerModel
+func (mock *MockRegisterModel) Register(input *model.RegisterRequest) (accessToken login.AccessToken, err error) {
+	mock.InputData = input
 
-// 	return mock.ResponseData, mock.ResponseError
-// }
+	return mock.ResponseData, mock.ResponseError
+}
 
-// type MockRegisterModel struct{}
+func TestRegisterErrors(t *testing.T) {
+	t.Parallel()
 
-// func (mock *MockRegisterModel) Register(_ model.RegistrationData) (login.AccessToken, error) {
-// 	return login.AccessToken(""), nil
-// }
+	testCases := []struct {
+		ExpectedError error
+		Input         string
+		Model         *MockRegisterModel
+		ErrorMap      api.RegisterSchemaMap
+	}{
+		{
+			ExpectedError: schema.ErrRegisterJSONDecode,
+			Input:         "[{]}",
+		},
+		{
+			ExpectedError: schema.ErrRegisterModel,
+			Input:         `{}`,
+			Model: &MockRegisterModel{
+				ResponseError: errors.New("test error"),
+			},
+			ErrorMap: schema.NewSchemaMap(),
+		},
+	}
 
-// func TestRegisterErrors(t *testing.T) {
-// 	t.Parallel()
+	for _, test := range testCases {
+		req := httptest.NewRequest(echo.GET, "http://localhost/register", strings.NewReader(test.Input))
+		rec := httptest.NewRecorder()
 
-// 	testError := errors.New("test error")
-// 	testCases := []struct {
-// 		ExpectedError error
-// 		Input         string
-// 		Connector     *MockRegisterConnector
-// 	}{
-// 		{
-// 			ExpectedError: api.ErrRegisterJSONDecode,
-// 			Input:         "[{]}",
-// 		},
-// 		{
-// 			ExpectedError: testError,
-// 			Input:         `{}`,
-// 			Connector: &MockRegisterConnector{
-// 				ResponseData:  "",
-// 				ResponseError: testError,
-// 			},
-// 		},
-// 	}
+		e := echo.New()
+		c := e.NewContext(req, rec)
 
-// 	for _, test := range testCases {
-// 		req := httptest.NewRequest(echo.GET, "http://localhost/register", strings.NewReader(test.Input))
-// 		rec := httptest.NewRecorder()
+		factory := api.New()
 
-// 		e := echo.New()
-// 		c := e.NewContext(req, rec)
+		err := factory.Register(test.Model, test.ErrorMap)(c)
 
-// 		factory := api.New()
+		if !errors.Is(err, test.ExpectedError) {
+			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
+		}
+	}
+}
 
-// 		err := factory.Register(&MockRegisterModel{}, test.Connector)(c)
+func TestRegisterSuccessful(t *testing.T) {
+	t.Parallel()
 
-// 		if !errors.Is(err, test.ExpectedError) {
-// 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
-// 		}
-// 	}
-// }
+	input := `{"user_id":"userID","name":"name"}`
+	registerModelMock := &MockRegisterModel{
+		ResponseData:  login.AccessToken("token"),
+		ResponseError: nil,
+	}
+	expectedResponse := `{"success":true,"data":"token"}` + "\n"
 
-// func TestRegisterSuccessful(t *testing.T) {
-// 	t.Parallel()
+	req := httptest.NewRequest(echo.POST, "http://localhost/login", strings.NewReader(input))
+	rec := httptest.NewRecorder()
 
-// 	input := `{"user_id":"userID","group_id":"groupID","name":"name"}`
-// 	connector := &MockRegisterConnector{
-// 		ResponseData:  "testToken",
-// 		ResponseError: nil,
-// 	}
-// 	expectedResponse := `{"success":true,"data":"testToken"}` + "\n"
+	e := echo.New()
+	c := e.NewContext(req, rec)
 
-// 	req := httptest.NewRequest(echo.PUT, "http://localhost/register", strings.NewReader(input))
-// 	rec := httptest.NewRecorder()
+	factory := api.New()
 
-// 	e := echo.New()
-// 	c := e.NewContext(req, rec)
+	err := factory.Register(registerModelMock, schema.NewSchemaMap())(c)
 
-// 	factory := api.New()
+	if err != nil {
+		t.Fatalf(`expected no err but got "%s" instead`, err)
+	}
 
-// 	err := factory.Register(&MockRegisterModel{}, connector)(c)
-
-// 	if err != nil {
-// 		t.Fatalf(`expected no err but got "%s" instead`, err)
-// 	}
-
-// 	assert.Equal(t, http.StatusOK, rec.Code, "response code doesn't match")
-// 	assert.EqualValues(t, expectedResponse, rec.Body.String(), "response body doesn't match")
-// }
+	assert.Equal(t, http.StatusOK, rec.Code, "response code doesn't match")
+	assert.EqualValues(t, expectedResponse, rec.Body.String(), "response body doesn't match")
+}

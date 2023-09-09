@@ -21,7 +21,7 @@ var ErrRegisterNameNotSet = errors.New("name is not set")
 
 var ErrRegisterDuplicate = errors.New("tried to register user that is already registered")
 
-var ErrRegisterCreateUserFailed = errors.New("failed to create user")
+var ErrRegisterDB = errors.New("failed to create user")
 var ErrRegisterCreateAccessToken = errors.New("failed to create user")
 
 func (client *Client) Register(data *RegisterRequest) (login.AccessToken, error) {
@@ -39,7 +39,7 @@ func (client *Client) Register(data *RegisterRequest) (login.AccessToken, error)
 			return "", errors.Join(ErrRegisterDuplicate, err)
 		}
 
-		return "", errors.Join(ErrRegisterCreateUserFailed, err)
+		return "", errors.Join(ErrRegisterDB, err)
 	}
 
 	token, err := client.LoginDB.CreateToken(data.UserID)

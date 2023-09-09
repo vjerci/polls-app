@@ -22,7 +22,7 @@ type LoginRepository interface {
 
 var ErrLoginUserIDNotSet = errors.New("user id not set")
 var ErrLoginUserNotFound = errors.New("user with given id does not exist")
-var ErrLoginUserGet = errors.New("getting user failed")
+var ErrLoginUserDB = errors.New("getting user failed")
 var ErrLoginCreateToken = errors.New("create token failed")
 
 func (client *Client) Login(data *LoginRequest) (*LoginResponse, error) {
@@ -36,7 +36,7 @@ func (client *Client) Login(data *LoginRequest) (*LoginResponse, error) {
 			return nil, ErrLoginUserNotFound
 		}
 
-		return nil, errors.Join(ErrLoginUserGet, err)
+		return nil, errors.Join(ErrLoginUserDB, err)
 	}
 
 	token, err := client.LoginDB.CreateToken(data.UserID)

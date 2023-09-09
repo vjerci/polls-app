@@ -37,7 +37,7 @@ var ErrLoginUserIDNotSet = &UserVisibleError{
 	Err:    model.ErrLoginUserIDNotSet,
 	Status: http.StatusBadRequest,
 }
-var convertedLoginErrors = []*UserVisibleError{
+var handledLoginErrors = []*UserVisibleError{
 	ErrLoginUserDoesNotExist,
 	ErrLoginUserIDNotSet,
 }
@@ -47,10 +47,10 @@ var ErrLoginJSONDecode = &UserVisibleError{
 	Status: http.StatusBadRequest,
 }
 
-var ErrLoginModel = errors.New("failed to login")
+var ErrLoginModel = errors.New("model failed to login")
 
 func (mapper *Map) LoginError(err error) error {
-	for _, targetError := range convertedLoginErrors {
+	for _, targetError := range handledLoginErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError
 		}

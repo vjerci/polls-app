@@ -24,17 +24,21 @@ func New(settings config.Config) (*echo.Echo, error) {
 
 	loginClient := login.New(settings.JWTSigningKey)
 	modelClient := &model.Client{
-		RegisterDB: dbClient,
-		LoginDB:    loginClient,
-		UserDB:     dbClient,
+		RegisterDB:   dbClient,
+		LoginDB:      loginClient,
+		UserDB:       dbClient,
+		PollListDB:   dbClient,
+		PollCreateDB: dbClient,
 	}
 	apiClient := api.New()
 
 	schemaMap := schema.NewSchemaMap()
 
 	routeHandler := route.Handler{
-		Register: apiClient.Register(modelClient, schemaMap),
-		Login:    apiClient.Login(modelClient, schemaMap),
+		Register:   apiClient.Register(modelClient, schemaMap),
+		Login:      apiClient.Login(modelClient, schemaMap),
+		PollList:   apiClient.PollList(modelClient, schemaMap),
+		PollCreate: apiClient.PollCreate(modelClient, schemaMap),
 	}
 
 	return routeHandler.Build(), nil

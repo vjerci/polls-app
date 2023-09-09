@@ -36,7 +36,7 @@ var ErrRegisterUserDuplicate = &UserVisibleError{
 	Err:    model.ErrRegisterDuplicate,
 	Status: http.StatusConflict,
 }
-var convertedRegisterErrors = []*UserVisibleError{
+var handledRegisterErrors = []*UserVisibleError{
 	ErrRegisterUserIDNotSet,
 	ErrRegisterNameNotSet,
 	ErrRegisterUserDuplicate,
@@ -50,7 +50,7 @@ var ErrRegisterJSONDecode = &UserVisibleError{
 }
 
 func (mapper *Map) RegisterError(err error) error {
-	for _, targetError := range convertedRegisterErrors {
+	for _, targetError := range handledRegisterErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError
 		}

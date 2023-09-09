@@ -62,7 +62,7 @@ func TestRegisterErrors(t *testing.T) {
 			LoginDBMock: &MockLoginDB{},
 		},
 		{
-			ExpectedError: model.ErrRegisterCreateUserFailed,
+			ExpectedError: model.ErrRegisterDB,
 			Input: &model.RegisterRequest{
 				UserID: "userID",
 				Name:   "name",

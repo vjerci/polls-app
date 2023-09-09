@@ -37,7 +37,7 @@ func TestPollsListErrors(t *testing.T) {
 			MockPollsListDB: nil,
 		},
 		{
-			ExpectedError: model.ErrPollListGet,
+			ExpectedError: model.ErrPollListDB,
 			Input: &model.PollListRequest{
 				Page: 0,
 			},

@@ -48,7 +48,7 @@ var ErrPollListNoData = &UserVisibleError{
 	Err:    model.ErrPollListNoPolls,
 	Status: http.StatusNotFound,
 }
-var convertedPollListErrors = []*UserVisibleError{
+var handledPollListErrors = []*UserVisibleError{
 	ErrPollListInvalidPage,
 	ErrPollListNoData,
 }
@@ -58,10 +58,10 @@ var ErrPollListJSONDecode = &UserVisibleError{
 	Status: http.StatusBadRequest,
 }
 
-var ErrPollListModel = errors.New("failed to get poll list")
+var ErrPollListModel = errors.New("model failed to get poll list")
 
 func (mapper *Map) PollListError(err error) error {
-	for _, targetError := range convertedPollListErrors {
+	for _, targetError := range handledPollListErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError
 		}

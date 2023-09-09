@@ -49,7 +49,7 @@ table "polls" {
 }
 
 
-table "polls_possible_answers" {
+table "poll_answers" {
    schema = schema.public
    column "id" {
     type    = uuid
@@ -79,3 +79,4 @@ table "polls_possible_answers" {
     unique = true
   }
 }
+

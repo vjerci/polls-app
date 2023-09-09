@@ -89,7 +89,7 @@ func TestPollListSuccessful(t *testing.T) {
 		`{"name":"Do you want a lift?","id":"1"},{"name":"do you want a lightning?","id":"2"}` +
 		`]}}` + "\n"
 
-	req := httptest.NewRequest(echo.POST, "http://localhost/login", strings.NewReader(input))
+	req := httptest.NewRequest(echo.POST, "http://localhost/polls_list", strings.NewReader(input))
 	rec := httptest.NewRecorder()
 
 	e := echo.New()

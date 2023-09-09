@@ -25,7 +25,7 @@ type PollListRepository interface {
 
 var ErrPollListInvalidPage = errors.New("invalid poll list page specified ")
 var ErrPollListNoPolls = errors.New("error getting poll list, no data available")
-var ErrPollListGet = errors.New("error getting poll list data")
+var ErrPollListDB = errors.New("error getting poll list data")
 
 func (client *Client) GetPollList(data *PollListRequest) (*PollListResponse, error) {
 	if data.Page < 0 {
@@ -34,7 +34,7 @@ func (client *Client) GetPollList(data *PollListRequest) (*PollListResponse, err
 
 	dbPolls, err := client.PollListDB.GetPollList(data.Page)
 	if err != nil {
-		return nil, errors.Join(ErrPollListGet, err)
+		return nil, errors.Join(ErrPollListDB, err)
 	}
 
 	if len(dbPolls) == 0 {

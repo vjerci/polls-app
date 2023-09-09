@@ -63,7 +63,7 @@ func TestLoginErrors(t *testing.T) {
 			LoginDBMock: &MockLoginDB{},
 		},
 		{
-			ExpectedError: model.ErrLoginUserGet,
+			ExpectedError: model.ErrLoginUserDB,
 			Input: &model.LoginRequest{
 				UserID: "userID",
 			},

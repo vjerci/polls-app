@@ -2,7 +2,7 @@ package model
 
 type Client struct {
 	RegisterDB   RegisterRepository
-	LoginDB      LoginRepository
+	AuthDB       AuthRepository
 	UserDB       UserRepository
 	PollListDB   PollListRepository
 	PollCreateDB PollCreateRepository

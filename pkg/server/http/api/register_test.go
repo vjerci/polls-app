@@ -10,18 +10,18 @@ import (
 	echo "github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type MockRegisterModel struct {
 	InputData     *model.RegisterRequest
-	ResponseData  login.AccessToken
+	ResponseData  auth.AccessToken
 	ResponseError error
 }
 
-func (mock *MockRegisterModel) Register(input *model.RegisterRequest) (accessToken login.AccessToken, err error) {
+func (mock *MockRegisterModel) Register(input *model.RegisterRequest) (accessToken auth.AccessToken, err error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -72,7 +72,7 @@ func TestRegisterSuccessful(t *testing.T) {
 
 	input := `{"user_id":"userID","name":"name"}`
 	registerModelMock := &MockRegisterModel{
-		ResponseData:  login.AccessToken("token"),
+		ResponseData:  auth.AccessToken("token"),
 		ResponseError: nil,
 	}
 	expectedResponse := `{"success":true,"data":"token"}` + "\n"

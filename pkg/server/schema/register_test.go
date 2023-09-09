@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
-	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 func TestRegisterErrors(t *testing.T) {
@@ -64,7 +64,7 @@ func TestRegisterInputConversion(t *testing.T) {
 func TestRegisterResponseConversion(t *testing.T) {
 	t.Parallel()
 
-	output := login.AccessToken("test")
+	output := auth.AccessToken("test")
 
 	schemaMap := schema.NewSchemaMap()
 

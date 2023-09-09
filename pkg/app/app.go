@@ -7,7 +7,7 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/route"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
@@ -22,10 +22,10 @@ func New(settings config.Config) (*echo.Echo, error) {
 		return nil, errors.Join(ErrDBConnect, err)
 	}
 
-	loginClient := login.New(settings.JWTSigningKey)
+	authClient := auth.New(settings.JWTSigningKey)
 	modelClient := &model.Client{
 		RegisterDB:   dbClient,
-		LoginDB:      loginClient,
+		AuthDB:       authClient,
 		UserDB:       dbClient,
 		PollListDB:   dbClient,
 		PollCreateDB: dbClient,

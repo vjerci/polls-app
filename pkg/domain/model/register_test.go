@@ -29,7 +29,7 @@ func TestRegisterErrors(t *testing.T) {
 		ExpectedError  error
 		Input          *model.RegisterRequest
 		RegisterDBMock *MockRegisterDB
-		LoginDBMock    *MockLoginDB
+		AuthDBMock     *MockAuthDB
 	}{
 		{
 			ExpectedError: model.ErrRegisterUserIDNotSet,
@@ -38,7 +38,7 @@ func TestRegisterErrors(t *testing.T) {
 				Name:   "name",
 			},
 			RegisterDBMock: &MockRegisterDB{},
-			LoginDBMock:    &MockLoginDB{},
+			AuthDBMock:     &MockAuthDB{},
 		},
 
 		{
@@ -48,7 +48,7 @@ func TestRegisterErrors(t *testing.T) {
 				Name:   "",
 			},
 			RegisterDBMock: &MockRegisterDB{},
-			LoginDBMock:    &MockLoginDB{},
+			AuthDBMock:     &MockAuthDB{},
 		},
 		{
 			ExpectedError: model.ErrRegisterDuplicate,
@@ -59,7 +59,7 @@ func TestRegisterErrors(t *testing.T) {
 			RegisterDBMock: &MockRegisterDB{
 				ResponseError: db.ErrCreateUserInsertCount,
 			},
-			LoginDBMock: &MockLoginDB{},
+			AuthDBMock: &MockAuthDB{},
 		},
 		{
 			ExpectedError: model.ErrRegisterDB,
@@ -70,7 +70,7 @@ func TestRegisterErrors(t *testing.T) {
 			RegisterDBMock: &MockRegisterDB{
 				ResponseError: errors.New("db error"),
 			},
-			LoginDBMock: &MockLoginDB{},
+			AuthDBMock: &MockAuthDB{},
 		},
 		{
 			ExpectedError: model.ErrRegisterCreateAccessToken,
@@ -81,7 +81,7 @@ func TestRegisterErrors(t *testing.T) {
 			RegisterDBMock: &MockRegisterDB{
 				ResponseError: nil,
 			},
-			LoginDBMock: &MockLoginDB{
+			AuthDBMock: &MockAuthDB{
 				ResponseError: errors.New("db error"),
 			},
 		},
@@ -90,7 +90,7 @@ func TestRegisterErrors(t *testing.T) {
 	for _, test := range testCases {
 		client := model.Client{
 			RegisterDB: test.RegisterDBMock,
-			LoginDB:    test.LoginDBMock,
+			AuthDB:     test.AuthDBMock,
 		}
 
 		token, err := client.Register(test.Input)
@@ -110,14 +110,14 @@ func TestRegisterSuccess(t *testing.T) {
 		ResponseError: nil,
 	}
 
-	loginDBMock := &MockLoginDB{
+	authDBMock := &MockAuthDB{
 		ResponseError:       nil,
 		ResponseAccessToken: "testToken",
 	}
 
 	client := model.Client{
 		RegisterDB: registerDBMock,
-		LoginDB:    loginDBMock,
+		AuthDB:     authDBMock,
 	}
 
 	input := &model.RegisterRequest{
@@ -134,7 +134,7 @@ func TestRegisterSuccess(t *testing.T) {
 	assert.EqualValues(t, input.UserID, registerDBMock.UserID, "expected input user_id to be passed to registerDB")
 	assert.EqualValues(t, input.Name, registerDBMock.Name, "expected input name to be passed to registerDB")
 
-	assert.EqualValues(t, loginDBMock.UserID, input.UserID, "expected input's user_id to be passed to loginDB")
+	assert.EqualValues(t, authDBMock.UserID, input.UserID, "expected input's user_id to be passed to loginDB")
 
-	assert.EqualValues(t, loginDBMock.ResponseAccessToken, token, "expected token to match response from loginDB")
+	assert.EqualValues(t, authDBMock.ResponseAccessToken, token, "expected token to match response from loginDB")
 }

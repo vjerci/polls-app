@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 )
 
 type RegisterRequest struct {
@@ -20,7 +20,7 @@ func (req *RegisterRequest) ToModel() *model.RegisterRequest {
 	}
 }
 
-func (mapper *Map) RegisterResponse(input login.AccessToken) string {
+func (mapper *Map) RegisterResponse(input auth.AccessToken) string {
 	return string(input)
 }
 

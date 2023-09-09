@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 )
 
 type LoginRequest struct {
@@ -16,8 +16,8 @@ type LoginResponse struct {
 	Name  string
 }
 
-type LoginRepository interface {
-	CreateToken(userID string) (login.AccessToken, error)
+type AuthRepository interface {
+	CreateToken(userID string) (auth.AccessToken, error)
 }
 
 var ErrLoginUserIDNotSet = errors.New("user id not set")
@@ -39,7 +39,7 @@ func (client *Client) Login(data *LoginRequest) (*LoginResponse, error) {
 		return nil, errors.Join(ErrLoginUserDB, err)
 	}
 
-	token, err := client.LoginDB.CreateToken(data.UserID)
+	token, err := client.AuthDB.CreateToken(data.UserID)
 	if err != nil {
 		return nil, errors.Join(ErrLoginCreateToken, err)
 	}

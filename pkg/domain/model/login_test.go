@@ -7,16 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 )
 
-type MockLoginDB struct {
+type MockAuthDB struct {
 	UserID              string
-	ResponseAccessToken login.AccessToken
+	ResponseAccessToken auth.AccessToken
 	ResponseError       error
 }
 
-func (mock *MockLoginDB) CreateToken(userID string) (login.AccessToken, error) {
+func (mock *MockAuthDB) CreateToken(userID string) (auth.AccessToken, error) {
 	mock.UserID = userID
 
 	return mock.ResponseAccessToken, mock.ResponseError
@@ -41,15 +41,15 @@ func TestLoginErrors(t *testing.T) {
 		ExpectedError error
 		Input         *model.LoginRequest
 		UserDBMock    *MockUserDB
-		LoginDBMock   *MockLoginDB
+		AuthDBMock    *MockAuthDB
 	}{
 		{
 			ExpectedError: model.ErrLoginUserIDNotSet,
 			Input: &model.LoginRequest{
 				UserID: "",
 			},
-			UserDBMock:  &MockUserDB{},
-			LoginDBMock: &MockLoginDB{},
+			UserDBMock: &MockUserDB{},
+			AuthDBMock: &MockAuthDB{},
 		},
 		{
 			ExpectedError: model.ErrLoginUserNotFound,
@@ -60,7 +60,7 @@ func TestLoginErrors(t *testing.T) {
 				ResponseName:  "",
 				ResponseError: db.ErrGetUserNoRows,
 			},
-			LoginDBMock: &MockLoginDB{},
+			AuthDBMock: &MockAuthDB{},
 		},
 		{
 			ExpectedError: model.ErrLoginUserDB,
@@ -71,7 +71,7 @@ func TestLoginErrors(t *testing.T) {
 				ResponseName:  "",
 				ResponseError: errors.New("test error"),
 			},
-			LoginDBMock: &MockLoginDB{},
+			AuthDBMock: &MockAuthDB{},
 		},
 		{
 			ExpectedError: model.ErrLoginCreateToken,
@@ -82,7 +82,7 @@ func TestLoginErrors(t *testing.T) {
 				ResponseName:  "userName",
 				ResponseError: nil,
 			},
-			LoginDBMock: &MockLoginDB{
+			AuthDBMock: &MockAuthDB{
 				ResponseError: errors.New("test error"),
 			},
 		},
@@ -90,8 +90,8 @@ func TestLoginErrors(t *testing.T) {
 
 	for _, test := range testCases {
 		client := model.Client{
-			LoginDB: test.LoginDBMock,
-			UserDB:  test.UserDBMock,
+			AuthDB: test.AuthDBMock,
+			UserDB: test.UserDBMock,
 		}
 
 		resp, err := client.Login(test.Input)
@@ -114,14 +114,14 @@ func TestLoginSuccess(t *testing.T) {
 		ResponseName:  "Jhon",
 	}
 
-	loginDBMock := &MockLoginDB{
+	AuthDBMock := &MockAuthDB{
 		ResponseError:       nil,
 		ResponseAccessToken: "testToken",
 	}
 
 	client := model.Client{
-		UserDB:  userDBMock,
-		LoginDB: loginDBMock,
+		UserDB: userDBMock,
+		AuthDB: AuthDBMock,
 	}
 
 	input := &model.LoginRequest{
@@ -135,8 +135,8 @@ func TestLoginSuccess(t *testing.T) {
 	}
 
 	assert.EqualValues(t, input.UserID, userDBMock.UserID, "expected input user_id to be passed to userDB")
-	assert.EqualValues(t, loginDBMock.UserID, input.UserID, "expected input's user_id to be passed to loginDB")
+	assert.EqualValues(t, AuthDBMock.UserID, input.UserID, "expected input's user_id to be passed to loginDB")
 
 	assert.EqualValues(t, userDBMock.ResponseName, resp.Name, "expected returned name to match response from userDB")
-	assert.EqualValues(t, loginDBMock.ResponseAccessToken, resp.Token, "expected token to match response from loginDB")
+	assert.EqualValues(t, AuthDBMock.ResponseAccessToken, resp.Token, "expected token to match response from loginDB")
 }

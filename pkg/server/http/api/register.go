@@ -7,17 +7,17 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type RegisterModel interface {
-	Register(input *model.RegisterRequest) (accessToken login.AccessToken, err error)
+	Register(input *model.RegisterRequest) (accessToken auth.AccessToken, err error)
 }
 
 type RegisterSchemaMap interface {
 	RegisterError(err error) error
-	RegisterResponse(input login.AccessToken) string
+	RegisterResponse(input auth.AccessToken) string
 }
 
 func (factory *FactoryImplementation) Register(

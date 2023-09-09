@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/login"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 )
 
 type RegisterRepository interface {
@@ -24,7 +24,7 @@ var ErrRegisterDuplicate = errors.New("tried to register user that is already re
 var ErrRegisterDB = errors.New("failed to create user")
 var ErrRegisterCreateAccessToken = errors.New("failed to create user")
 
-func (client *Client) Register(data *RegisterRequest) (login.AccessToken, error) {
+func (client *Client) Register(data *RegisterRequest) (auth.AccessToken, error) {
 	if data.UserID == "" {
 		return "", ErrRegisterUserIDNotSet
 	}
@@ -42,7 +42,7 @@ func (client *Client) Register(data *RegisterRequest) (login.AccessToken, error)
 		return "", errors.Join(ErrRegisterDB, err)
 	}
 
-	token, err := client.LoginDB.CreateToken(data.UserID)
+	token, err := client.AuthDB.CreateToken(data.UserID)
 	if err != nil {
 		return "", errors.Join(ErrRegisterCreateAccessToken, err)
 	}

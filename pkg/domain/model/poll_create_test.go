@@ -12,11 +12,11 @@ import (
 type MockPollCreateDB struct {
 	InputPollName    string
 	InputPollAnswers []string
-	Response         *db.CreatePollResponse
+	Response         *db.PollCreateResponse
 	ResponseError    error
 }
 
-func (mock *MockPollCreateDB) CreatePoll(name string, answers []string) (*db.CreatePollResponse, error) {
+func (mock *MockPollCreateDB) CreatePoll(name string, answers []string) (*db.PollCreateResponse, error) {
 	mock.InputPollName = name
 	mock.InputPollAnswers = answers
 
@@ -88,10 +88,10 @@ func TestPollCreateSuccess(t *testing.T) {
 
 	pollCreateDBMock := &MockPollCreateDB{
 		ResponseError: nil,
-		Response: &db.CreatePollResponse{
+		Response: &db.PollCreateResponse{
 			Name: "pollName",
 			ID:   "pollID",
-			Answers: []db.CreatePollAnswer{
+			Answers: []db.PollCreateAnswer{
 				{
 					Name: "answerName1",
 					ID:   "answerID1",

@@ -8,21 +8,21 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type CreatePollResponse struct {
+type PollCreateResponse struct {
 	Name    string
 	ID      string
-	Answers []CreatePollAnswer
+	Answers []PollCreateAnswer
 }
 
-type CreatePollAnswer struct {
+type PollCreateAnswer struct {
 	Name string
 	ID   string
 }
 
-var ErrCreatePollInsert = errors.New("failed to insert entry into polls table")
-var ErrCreatePollAnswer = errors.New("failed to insert entry into answer table")
+var ErrPollCreateInsert = errors.New("failed to insert entry into polls table")
+var ErrPollCreateAnswerInsert = errors.New("failed to insert entry into answer table")
 
-func (client *Client) CreatePoll(name string, answers []string) (*CreatePollResponse, error) {
+func (client *Client) CreatePoll(name string, answers []string) (*PollCreateResponse, error) {
 	var pollID string
 
 	err := client.Pool.QueryRow(
@@ -33,16 +33,16 @@ func (client *Client) CreatePoll(name string, answers []string) (*CreatePollResp
 		time.Now().Unix(),
 	).Scan(&pollID)
 	if err != nil {
-		return nil, errors.Join(ErrCreatePollInsert, err)
+		return nil, errors.Join(ErrPollCreateInsert, err)
 	}
 
 	batch := &pgx.Batch{}
 
 	for _, answer := range answers {
-		batch.Queue(`INSERT INTO poll_answers (poll_id, name) VALUES ($1, $2) RETURNING id`, pollID, answer)
+		batch.Queue(`INSERT INTO answers (poll_id, name) VALUES ($1, $2) RETURNING id`, pollID, answer)
 	}
 
-	createResult := &CreatePollResponse{
+	createResult := &PollCreateResponse{
 		Name:    name,
 		ID:      pollID,
 		Answers: nil,
@@ -56,10 +56,10 @@ func (client *Client) CreatePoll(name string, answers []string) (*CreatePollResp
 
 		err := batchResult.QueryRow().Scan(&answerID)
 		if err != nil {
-			return nil, errors.Join(ErrCreatePollAnswer, err)
+			return nil, errors.Join(ErrPollCreateAnswerInsert, err)
 		}
 
-		createResult.Answers = append(createResult.Answers, CreatePollAnswer{
+		createResult.Answers = append(createResult.Answers, PollCreateAnswer{
 			Name: answers[answerPointer],
 			ID:   answerID,
 		})

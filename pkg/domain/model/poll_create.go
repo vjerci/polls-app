@@ -19,7 +19,7 @@ type PollCreateResponse struct {
 }
 
 type PollCreateRepository interface {
-	CreatePoll(name string, answers []string) (*db.CreatePollResponse, error)
+	CreatePoll(name string, answers []string) (*db.PollCreateResponse, error)
 }
 
 var ErrPollCreateNameEmpty = errors.New("poll name cannot be empty")

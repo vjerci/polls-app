@@ -19,8 +19,6 @@ type PollDetailsSchemaMap interface {
 	PollDetailsResponse(input *model.PollDetailsResponse) *schema.PollDetailsResponse
 }
 
-var ErrUserIDIsNotString = errors.New("user id is not string")
-
 func (factory *FactoryImplementation) PollDetails(
 	pollDetailsModel PollDetailsModel,
 	schemaMap PollDetailsSchemaMap,

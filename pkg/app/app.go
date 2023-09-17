@@ -24,21 +24,25 @@ func New(settings config.Config) (*echo.Echo, error) {
 
 	authClient := auth.New(settings.JWTSigningKey)
 	modelClient := &model.Client{
-		RegisterDB:   dbClient,
-		AuthDB:       authClient,
-		UserDB:       dbClient,
-		PollListDB:   dbClient,
-		PollCreateDB: dbClient,
+		RegisterDB:    dbClient,
+		AuthDB:        authClient,
+		UserDB:        dbClient,
+		PollListDB:    dbClient,
+		PollCreateDB:  dbClient,
+		PollDetailsDB: dbClient,
+		PollVoteDB:    dbClient,
 	}
 	apiClient := api.New()
 
 	schemaMap := schema.NewSchemaMap()
 
 	routeHandler := route.Handler{
-		Register:   apiClient.Register(modelClient, schemaMap),
-		Login:      apiClient.Login(modelClient, schemaMap),
-		PollList:   apiClient.PollList(modelClient, schemaMap),
-		PollCreate: apiClient.PollCreate(modelClient, schemaMap),
+		Register:    apiClient.Register(modelClient, schemaMap),
+		Login:       apiClient.Login(modelClient, schemaMap),
+		PollList:    apiClient.PollList(modelClient, schemaMap),
+		PollCreate:  apiClient.PollCreate(modelClient, schemaMap),
+		PollDetails: apiClient.PollDetails(modelClient, schemaMap),
+		PollVote:    apiClient.PollVote(modelClient, schemaMap),
 	}
 
 	return routeHandler.Build(), nil

@@ -7,10 +7,14 @@ import (
 )
 
 type Handler struct {
-	Register   echo.HandlerFunc
-	Login      echo.HandlerFunc
-	PollList   echo.HandlerFunc
+	Register echo.HandlerFunc
+	Login    echo.HandlerFunc
+
+	PollList    echo.HandlerFunc
+	PollDetails echo.HandlerFunc
+
 	PollCreate echo.HandlerFunc
+	PollVote   echo.HandlerFunc
 }
 
 func (handler *Handler) Build() *echo.Echo {
@@ -36,7 +40,10 @@ func (handler *Handler) Build() *echo.Echo {
 	auth.POST("/login", handler.Login)
 
 	endpoint.GET("/poll", handler.PollList)
+	endpoint.GET("/poll/:id", handler.PollDetails)
+
 	endpoint.PUT("/poll", handler.PollCreate)
+	endpoint.POST("/poll/:id/vote", handler.PollVote)
 
 	return router
 }

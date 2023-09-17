@@ -20,7 +20,9 @@ func (req *RegisterRequest) ToModel() *model.RegisterRequest {
 	}
 }
 
-func (mapper *Map) RegisterResponse(input auth.AccessToken) string {
+type RegisterSchemaMap struct{}
+
+func (mapper *RegisterSchemaMap) Response(input auth.AccessToken) string {
 	return string(input)
 }
 
@@ -49,7 +51,7 @@ var ErrRegisterJSONDecode = &UserVisibleError{
 	Status: http.StatusBadRequest,
 }
 
-func (mapper *Map) RegisterError(err error) error {
+func (mapper *RegisterSchemaMap) ErrorHandler(err error) error {
 	for _, targetError := range handledRegisterErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError

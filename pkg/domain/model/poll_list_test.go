@@ -58,11 +58,11 @@ func TestPollsListErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		client := model.Client{
+		pollListModel := model.PollListModel{
 			PollListDB: test.MockPollsListDB,
 		}
 
-		resp, err := client.GetPollList(test.Input)
+		resp, err := pollListModel.Get(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -91,7 +91,7 @@ func TestPollListSuccess(t *testing.T) {
 		},
 	}
 
-	client := model.Client{
+	pollListModel := model.PollListModel{
 		PollListDB: pollListDBMock,
 	}
 
@@ -99,7 +99,7 @@ func TestPollListSuccess(t *testing.T) {
 		Page: 1,
 	}
 
-	resp, err := client.GetPollList(input)
+	resp, err := pollListModel.Get(input)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

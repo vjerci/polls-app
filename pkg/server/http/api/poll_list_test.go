@@ -20,7 +20,7 @@ type MockPollsListModel struct {
 	ResponseError error
 }
 
-func (mock *MockPollsListModel) GetPollList(input *model.PollListRequest) (*model.PollListResponse, error) {
+func (mock *MockPollsListModel) Get(input *model.PollListRequest) (*model.PollListResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -33,7 +33,6 @@ func TestPollListErrors(t *testing.T) {
 		ExpectedError error
 		Input         string
 		Model         *MockPollsListModel
-		ErrorMap      api.PollListSchemaMap
 	}{
 		{
 			ExpectedError: schema.ErrPollListJSONDecode,
@@ -45,7 +44,6 @@ func TestPollListErrors(t *testing.T) {
 			Model: &MockPollsListModel{
 				ResponseError: errors.New("test error"),
 			},
-			ErrorMap: schema.NewSchemaMap(),
 		},
 	}
 
@@ -54,11 +52,15 @@ func TestPollListErrors(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		e := echo.New()
-		c := e.NewContext(req, rec)
+		echoContext := e.NewContext(req, rec)
 
-		factory := api.New()
+		apiClient := api.New(&api.Models{
+			PollList: test.Model,
+		}, &api.SchemaMap{
+			PollList: &schema.PollListSchemaMap{},
+		})
 
-		err := factory.PollList(test.Model, test.ErrorMap)(c)
+		err := apiClient.PollList(echoContext)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -93,11 +95,15 @@ func TestPollListSuccessful(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	e := echo.New()
-	c := e.NewContext(req, rec)
+	echoContext := e.NewContext(req, rec)
 
-	factory := api.New()
+	apiClient := api.New(&api.Models{
+		PollList: pollListModelMock,
+	}, &api.SchemaMap{
+		PollList: &schema.PollListSchemaMap{},
+	})
 
-	err := factory.PollList(pollListModelMock, schema.NewSchemaMap())(c)
+	err := apiClient.PollList(echoContext)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

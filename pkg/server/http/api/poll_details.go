@@ -11,38 +11,33 @@ import (
 )
 
 type PollDetailsModel interface {
-	GetPollDetails(data *model.PollDetailsRequest) (*model.PollDetailsResponse, error)
+	Get(data *model.PollDetailsRequest) (*model.PollDetailsResponse, error)
 }
 
 type PollDetailsSchemaMap interface {
-	PollDetailsError(err error) error
-	PollDetailsResponse(input *model.PollDetailsResponse) *schema.PollDetailsResponse
+	ErrorHandler(err error) error
+	Response(input *model.PollDetailsResponse) *schema.PollDetailsResponse
 }
 
-func (factory *FactoryImplementation) PollDetails(
-	pollDetailsModel PollDetailsModel,
-	schemaMap PollDetailsSchemaMap,
-) echo.HandlerFunc {
-	return func(echoContext echo.Context) error {
-		userID := echoContext.Get("userID")
+func (client *Client) PollDetails(echoContext echo.Context) error {
+	userID := echoContext.Get("userID")
 
-		userIDS, ok := userID.(string)
-		if !ok {
-			return errors.Join(ErrUserIDIsNotString, fmt.Errorf("got %#v for userID", userID))
-		}
-
-		resp, err := pollDetailsModel.GetPollDetails(&model.PollDetailsRequest{
-			PollID: echoContext.Param("id"),
-			UserID: userIDS,
-		})
-		if err != nil {
-			return schemaMap.PollDetailsError(err)
-		}
-
-		return echoContext.JSON(http.StatusOK, Response{
-			Success: true,
-			Data:    schemaMap.PollDetailsResponse(resp),
-			Error:   nil,
-		})
+	userIDS, ok := userID.(string)
+	if !ok {
+		return errors.Join(ErrUserIDIsNotString, fmt.Errorf("got %#v for userID", userID))
 	}
+
+	resp, err := client.models.PollDetails.Get(&model.PollDetailsRequest{
+		PollID: echoContext.Param("id"),
+		UserID: userIDS,
+	})
+	if err != nil {
+		return client.schemas.PollDetails.ErrorHandler(err)
+	}
+
+	return echoContext.JSON(http.StatusOK, Response{
+		Success: true,
+		Data:    client.schemas.PollDetails.Response(resp),
+		Error:   nil,
+	})
 }

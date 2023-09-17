@@ -19,6 +19,10 @@ type PollVoteRepository interface {
 	UpsertUserAnswer(pollID, answerID, userID string) (modified bool, err error)
 }
 
+type PollVoteModel struct {
+	PollVoteDB PollVoteRepository
+}
+
 var ErrPollVoteUserIDEmpty = errors.New("failed to submit vote, userID is empty")
 var ErrPollVotePollIDEmpty = errors.New("failed to submit vote, pollID is empty")
 var ErrPollVoteAnswerIDEmpty = errors.New("failed to submit vote, answerID is empty")
@@ -26,7 +30,7 @@ var ErrPollVoteAnswerIDEmpty = errors.New("failed to submit vote, answerID is em
 var ErrPollVoteAnswerNotFound = errors.New("failed to submit vote, combination of pollID and answerID doesn't exist")
 var ErrPollVoteUpsertFailed = errors.New("failed to submit vote, upsert of user answer failed")
 
-func (client *Client) PollVote(data *PollVoteRequest) (*PollVoteResponse, error) {
+func (model *PollVoteModel) Do(data *PollVoteRequest) (*PollVoteResponse, error) {
 	if data.PollID == "" {
 		return nil, ErrPollVotePollIDEmpty
 	}
@@ -39,12 +43,12 @@ func (client *Client) PollVote(data *PollVoteRequest) (*PollVoteResponse, error)
 		return nil, ErrPollVoteUserIDEmpty
 	}
 
-	err := client.PollVoteDB.ExistsPollAnswer(data.PollID, data.AnswerID)
+	err := model.PollVoteDB.ExistsPollAnswer(data.PollID, data.AnswerID)
 	if err != nil {
 		return nil, errors.Join(ErrPollVoteAnswerNotFound, err)
 	}
 
-	modified, err := client.PollVoteDB.UpsertUserAnswer(data.PollID, data.AnswerID, data.UserID)
+	modified, err := model.PollVoteDB.UpsertUserAnswer(data.PollID, data.AnswerID, data.UserID)
 	if err != nil {
 		return nil, errors.Join(ErrPollVoteUpsertFailed, err)
 	}

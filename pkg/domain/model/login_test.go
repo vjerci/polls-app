@@ -89,12 +89,12 @@ func TestLoginErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		client := model.Client{
+		loginModel := model.LoginModel{
 			AuthDB: test.AuthDBMock,
 			UserDB: test.UserDBMock,
 		}
 
-		resp, err := client.Login(test.Input)
+		resp, err := loginModel.Do(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -119,7 +119,7 @@ func TestLoginSuccess(t *testing.T) {
 		ResponseAccessToken: "testToken",
 	}
 
-	client := model.Client{
+	loginModel := model.LoginModel{
 		UserDB: userDBMock,
 		AuthDB: AuthDBMock,
 	}
@@ -128,7 +128,7 @@ func TestLoginSuccess(t *testing.T) {
 		UserID: "userID",
 	}
 
-	resp, err := client.Login(input)
+	resp, err := loginModel.Do(input)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

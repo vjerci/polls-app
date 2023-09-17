@@ -7,11 +7,13 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
+type PollDetailsSchemaMap struct{}
+
 type PollDetailsResponse struct {
-	Name     string              `json:"name"`
 	ID       string              `json:"id"`
-	Answers  []PollDetailsAnswer `json:"answers"`
+	Name     string              `json:"name"`
 	UserVote string              `json:"user_vote"`
+	Answers  []PollDetailsAnswer `json:"answers"`
 }
 
 type PollDetailsAnswer struct {
@@ -20,7 +22,7 @@ type PollDetailsAnswer struct {
 	VotesCount int    `json:"votes_count"`
 }
 
-func (mapper *Map) PollDetailsResponse(input *model.PollDetailsResponse) *PollDetailsResponse {
+func (mapper *PollDetailsSchemaMap) Response(input *model.PollDetailsResponse) *PollDetailsResponse {
 	answers := make([]PollDetailsAnswer, len(input.Answers))
 	for i, v := range input.Answers {
 		answers[i] = PollDetailsAnswer{
@@ -58,7 +60,7 @@ var handledPollDetailsErrors = []*UserVisibleError{
 
 var ErrPollDetailsModel = errors.New("model failed to get poll details")
 
-func (mapper *Map) PollDetailsError(err error) error {
+func (mapper *PollDetailsSchemaMap) ErrorHandler(err error) error {
 	for _, targetError := range handledPollDetailsErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError

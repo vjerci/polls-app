@@ -19,12 +19,14 @@ func (req *PollCreateRequest) ToModel() *model.PollCreateRequest {
 	}
 }
 
+type PollCreateSchemaMap struct{}
+
 type PollCreateResponse struct {
 	ID         string   `json:"id"`
 	AnswersIDS []string `json:"answers_ids"`
 }
 
-func (mapper *Map) PollCreateResponse(input *model.PollCreateResponse) *PollCreateResponse {
+func (mapper *PollCreateSchemaMap) Response(input *model.PollCreateResponse) *PollCreateResponse {
 	return &PollCreateResponse{
 		ID:         input.PollID,
 		AnswersIDS: input.AnswersIDS,
@@ -56,7 +58,7 @@ var ErrPollCreateJSONDecode = &UserVisibleError{
 
 var ErrPollCreateModel = errors.New("model failed to create poll")
 
-func (mapper *Map) PollCreateError(err error) error {
+func (mapper *PollCreateSchemaMap) ErrorHandler(err error) error {
 	for _, targetError := range handledPollCreateErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError

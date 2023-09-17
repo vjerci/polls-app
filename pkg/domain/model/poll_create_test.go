@@ -67,11 +67,11 @@ func TestPollCreateErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		client := model.Client{
+		pollCreateModel := model.PollCreateModel{
 			PollCreateDB: test.PollCreateDB,
 		}
 
-		resp, err := client.CreatePoll(test.Input)
+		resp, err := pollCreateModel.Create(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -104,7 +104,7 @@ func TestPollCreateSuccess(t *testing.T) {
 		},
 	}
 
-	client := model.Client{
+	pollCreateModel := model.PollCreateModel{
 		PollCreateDB: pollCreateDBMock,
 	}
 
@@ -113,7 +113,7 @@ func TestPollCreateSuccess(t *testing.T) {
 		Answers: []string{"answer1", "answer2"},
 	}
 
-	resp, err := client.CreatePoll(input)
+	resp, err := pollCreateModel.Create(input)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

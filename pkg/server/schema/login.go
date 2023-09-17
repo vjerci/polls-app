@@ -17,12 +17,14 @@ func (req *LoginRequest) ToModel() *model.LoginRequest {
 	}
 }
 
+type LoginSchemaMap struct{}
+
 type LoginResponse struct {
 	Token string `json:"token"`
 	Name  string `json:"name"`
 }
 
-func (mapper *Map) LoginResponse(input *model.LoginResponse) *LoginResponse {
+func (mapper *LoginSchemaMap) Response(input *model.LoginResponse) *LoginResponse {
 	return &LoginResponse{
 		Token: input.Token,
 		Name:  input.Name,
@@ -49,7 +51,7 @@ var ErrLoginJSONDecode = &UserVisibleError{
 
 var ErrLoginModel = errors.New("model failed to login")
 
-func (mapper *Map) LoginError(err error) error {
+func (mapper *LoginSchemaMap) ErrorHandler(err error) error {
 	for _, targetError := range handledLoginErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError

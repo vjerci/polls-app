@@ -12,38 +12,33 @@ import (
 )
 
 type RegisterModel interface {
-	Register(input *model.RegisterRequest) (accessToken auth.AccessToken, err error)
+	Do(input *model.RegisterRequest) (accessToken auth.AccessToken, err error)
 }
 
 type RegisterSchemaMap interface {
-	RegisterError(err error) error
-	RegisterResponse(input auth.AccessToken) string
+	ErrorHandler(err error) error
+	Response(input auth.AccessToken) string
 }
 
-func (factory *FactoryImplementation) Register(
-	registerModel RegisterModel,
-	schemaMap RegisterSchemaMap,
-) echo.HandlerFunc {
-	return func(echoContext echo.Context) error {
-		var data schema.RegisterRequest
+func (client *Client) Register(echoContext echo.Context) error {
+	var data schema.RegisterRequest
 
-		err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
-		if err != nil {
-			return &schema.UserVisibleError{
-				Err:    errors.Join(schema.ErrRegisterJSONDecode, err),
-				Status: schema.ErrRegisterJSONDecode.Status,
-			}
+	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
+	if err != nil {
+		return &schema.UserVisibleError{
+			Err:    errors.Join(schema.ErrRegisterJSONDecode, err),
+			Status: schema.ErrRegisterJSONDecode.Status,
 		}
-
-		token, err := registerModel.Register(data.ToModel())
-		if err != nil {
-			return schemaMap.RegisterError(err)
-		}
-
-		return echoContext.JSON(http.StatusOK, Response{
-			Success: true,
-			Data:    schemaMap.RegisterResponse(token),
-			Error:   nil,
-		})
 	}
+
+	token, err := client.models.Register.Do(data.ToModel())
+	if err != nil {
+		return client.schemas.Register.ErrorHandler(err)
+	}
+
+	return echoContext.JSON(http.StatusOK, Response{
+		Success: true,
+		Data:    client.schemas.Register.Response(token),
+		Error:   nil,
+	})
 }

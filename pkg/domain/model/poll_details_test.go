@@ -122,11 +122,11 @@ func TestPollDetailsErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		client := model.Client{
+		pollDetailsModel := model.PollDetailsModel{
 			PollDetailsDB: test.PollDetailsDB,
 		}
 
-		resp, err := client.GetPollDetails(test.Input)
+		resp, err := pollDetailsModel.Get(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -199,11 +199,11 @@ func TestPollDetailsSuccess(t *testing.T) {
 	}
 
 	for _, test := range testsCases {
-		client := model.Client{
+		pollDetailsModel := model.PollDetailsModel{
 			PollDetailsDB: test.PollDetailsDB,
 		}
 
-		resp, err := client.GetPollDetails(test.Input)
+		resp, err := pollDetailsModel.Get(test.Input)
 
 		if err != nil {
 			t.Fatalf(`expected no err but got "%s" instead`, err)

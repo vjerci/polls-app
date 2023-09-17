@@ -37,9 +37,9 @@ func TestRegisterErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		schemaMap := schema.NewSchemaMap()
+		schemaMap := &schema.RegisterSchemaMap{}
 
-		err := schemaMap.RegisterError(test.InputError)
+		err := schemaMap.ErrorHandler(test.InputError)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -66,9 +66,9 @@ func TestRegisterResponseConversion(t *testing.T) {
 
 	output := auth.AccessToken("test")
 
-	schemaMap := schema.NewSchemaMap()
+	schemaMap := &schema.RegisterSchemaMap{}
 
-	converted := schemaMap.RegisterResponse(output)
+	converted := schemaMap.Response(output)
 
 	assert.EqualValues(t, string(output), converted, "expected converted value to be equal to output")
 }

@@ -11,38 +11,33 @@ import (
 )
 
 type PollCreateModel interface {
-	CreatePoll(data *model.PollCreateRequest) (*model.PollCreateResponse, error)
+	Create(data *model.PollCreateRequest) (*model.PollCreateResponse, error)
 }
 
 type PollCreateSchemaMap interface {
-	PollCreateError(err error) error
-	PollCreateResponse(input *model.PollCreateResponse) *schema.PollCreateResponse
+	ErrorHandler(err error) error
+	Response(input *model.PollCreateResponse) *schema.PollCreateResponse
 }
 
-func (factory *FactoryImplementation) PollCreate(
-	pollCreateModel PollCreateModel,
-	schemaMap PollCreateSchemaMap,
-) echo.HandlerFunc {
-	return func(echoContext echo.Context) error {
-		var data schema.PollCreateRequest
+func (client *Client) PollCreate(echoContext echo.Context) error {
+	var data schema.PollCreateRequest
 
-		err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
-		if err != nil {
-			return &schema.UserVisibleError{
-				Err:    errors.Join(schema.ErrPollCreateJSONDecode, err),
-				Status: schema.ErrPollCreateJSONDecode.Status,
-			}
+	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
+	if err != nil {
+		return &schema.UserVisibleError{
+			Err:    errors.Join(schema.ErrPollCreateJSONDecode, err),
+			Status: schema.ErrPollCreateJSONDecode.Status,
 		}
-
-		resp, err := pollCreateModel.CreatePoll(data.ToModel())
-		if err != nil {
-			return schemaMap.PollCreateError(err)
-		}
-
-		return echoContext.JSON(http.StatusOK, Response{
-			Success: true,
-			Data:    schemaMap.PollCreateResponse(resp),
-			Error:   nil,
-		})
 	}
+
+	resp, err := client.models.PollCreate.Create(data.ToModel())
+	if err != nil {
+		return client.schemas.PollCreate.ErrorHandler(err)
+	}
+
+	return echoContext.JSON(http.StatusOK, Response{
+		Success: true,
+		Data:    client.schemas.PollCreate.Response(resp),
+		Error:   nil,
+	})
 }

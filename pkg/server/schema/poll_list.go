@@ -17,6 +17,8 @@ func (req *PollListRequest) ToModel() *model.PollListRequest {
 	}
 }
 
+type PollListSchemaMap struct{}
+
 type PollListResponse struct {
 	Polls []GeneralPollInfo `json:"polls"`
 }
@@ -26,7 +28,7 @@ type GeneralPollInfo struct {
 	ID   string `json:"id"`
 }
 
-func (mapper *Map) PollListResponse(input *model.PollListResponse) *PollListResponse {
+func (mapper *PollListSchemaMap) Response(input *model.PollListResponse) *PollListResponse {
 	polls := make([]GeneralPollInfo, len(input.Polls))
 	for i, v := range input.Polls {
 		polls[i] = GeneralPollInfo{
@@ -60,7 +62,7 @@ var ErrPollListJSONDecode = &UserVisibleError{
 
 var ErrPollListModel = errors.New("model failed to get poll list")
 
-func (mapper *Map) PollListError(err error) error {
+func (mapper *PollListSchemaMap) ErrorHandler(err error) error {
 	for _, targetError := range handledPollListErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError

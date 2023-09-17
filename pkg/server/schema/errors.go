@@ -4,12 +4,6 @@ import (
 	"errors"
 )
 
-type Map struct{}
-
-func NewSchemaMap() *Map {
-	return &Map{}
-}
-
 // UserVisibleError is used for showing usage errors to users for easier api usage.
 // They also enhance error messages with status code.
 type UserVisibleError struct {

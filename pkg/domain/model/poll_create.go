@@ -14,12 +14,16 @@ type PollCreateRequest struct {
 }
 
 type PollCreateResponse struct {
-	PollID     string
-	AnswersIDS []string
+	PollID     string   `json:"poll_id"`
+	AnswersIDS []string `json:"answer_ids"`
 }
 
 type PollCreateRepository interface {
 	CreatePoll(name string, answers []string) (*db.PollCreateResponse, error)
+}
+
+type PollCreateModel struct {
+	PollCreateDB PollCreateRepository
 }
 
 var ErrPollCreateNameEmpty = errors.New("poll name cannot be empty")
@@ -27,7 +31,7 @@ var ErrPollCreateAnswersLen = errors.New("poll needs at least 2 answers")
 var ErrPollCreateAnswerEmpty = errors.New("poll answer name can't be empty")
 var ErrPollCreateDB = errors.New("failed to create poll in db")
 
-func (client *Client) CreatePoll(data *PollCreateRequest) (*PollCreateResponse, error) {
+func (model *PollCreateModel) Create(data *PollCreateRequest) (*PollCreateResponse, error) {
 	if data.Name == "" {
 		return nil, ErrPollCreateNameEmpty
 	}
@@ -42,7 +46,7 @@ func (client *Client) CreatePoll(data *PollCreateRequest) (*PollCreateResponse, 
 		}
 	}
 
-	dbPolls, err := client.PollCreateDB.CreatePoll(data.Name, data.Answers)
+	dbPolls, err := model.PollCreateDB.CreatePoll(data.Name, data.Answers)
 	if err != nil {
 		return nil, errors.Join(ErrPollCreateDB, err)
 	}

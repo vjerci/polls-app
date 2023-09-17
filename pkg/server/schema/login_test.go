@@ -31,9 +31,9 @@ func TestLoginErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		schemaMap := schema.NewSchemaMap()
+		schemaMap := &schema.LoginSchemaMap{}
 
-		err := schemaMap.LoginError(test.InputError)
+		err := schemaMap.ErrorHandler(test.InputError)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -61,7 +61,9 @@ func TestLoginResponseConversion(t *testing.T) {
 		Name:  "Jhon",
 	}
 
-	converted := schema.NewSchemaMap().LoginResponse(&output)
+	schemaMap := &schema.LoginSchemaMap{}
+
+	converted := schemaMap.Response(&output)
 
 	assert.EqualValues(t, output.Token, converted.Token, "expected token values to be equal")
 	assert.EqualValues(t, output.Name, converted.Name, "expected name values to be equal")

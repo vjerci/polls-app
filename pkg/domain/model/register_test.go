@@ -88,12 +88,12 @@ func TestRegisterErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		client := model.Client{
+		registerModel := model.RegisterModel{
 			RegisterDB: test.RegisterDBMock,
 			AuthDB:     test.AuthDBMock,
 		}
 
-		token, err := client.Register(test.Input)
+		token, err := registerModel.Do(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -115,7 +115,7 @@ func TestRegisterSuccess(t *testing.T) {
 		ResponseAccessToken: "testToken",
 	}
 
-	client := model.Client{
+	registerModel := model.RegisterModel{
 		RegisterDB: registerDBMock,
 		AuthDB:     authDBMock,
 	}
@@ -125,7 +125,7 @@ func TestRegisterSuccess(t *testing.T) {
 		Name:   "name",
 	}
 
-	token, err := client.Register(input)
+	token, err := registerModel.Do(input)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

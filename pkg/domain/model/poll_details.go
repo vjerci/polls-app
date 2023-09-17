@@ -31,6 +31,10 @@ type PollDetailsRepository interface {
 	GetUserAnswer(pollID, userID string) (answerID string, err error)
 }
 
+type PollDetailsModel struct {
+	PollDetailsDB PollDetailsRepository
+}
+
 var ErrPollDetailsIDEmpty = errors.New("poll details failure, PollID cannot be empty")
 var ErrPollDetailsUserIDEmpty = errors.New("poll details failure, UserID cannot be empty")
 
@@ -40,7 +44,7 @@ var ErrPollDetailsQueryInfo = errors.New("failed to get poll details info")
 var ErrPollDetailsAnswers = errors.New("failed to get answers")
 var ErrPollDetailsUserAnswer = errors.New("failed to get user answer")
 
-func (client *Client) GetPollDetails(data *PollDetailsRequest) (*PollDetailsResponse, error) {
+func (model *PollDetailsModel) Get(data *PollDetailsRequest) (*PollDetailsResponse, error) {
 	if data.PollID == "" {
 		return nil, ErrPollDetailsIDEmpty
 	}
@@ -49,7 +53,7 @@ func (client *Client) GetPollDetails(data *PollDetailsRequest) (*PollDetailsResp
 		return nil, ErrPollDetailsUserIDEmpty
 	}
 
-	fetcher := newPollDetailsFetcher(data.UserID, data.PollID, client.PollDetailsDB)
+	fetcher := newPollDetailsFetcher(data.UserID, data.PollID, model.PollDetailsDB)
 
 	return fetcher.Fetch()
 }

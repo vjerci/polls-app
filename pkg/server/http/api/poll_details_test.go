@@ -20,7 +20,7 @@ type MockPollDetailsModel struct {
 	ResponseError error
 }
 
-func (mock *MockPollDetailsModel) GetPollDetails(input *model.PollDetailsRequest) (*model.PollDetailsResponse, error) {
+func (mock *MockPollDetailsModel) Get(input *model.PollDetailsRequest) (*model.PollDetailsResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -33,7 +33,6 @@ func TestPollDetailsErrors(t *testing.T) {
 		ExpectedError error
 		Input         func(echoContext echo.Context) echo.Context
 		Model         *MockPollDetailsModel
-		ErrorMap      api.PollDetailsSchemaMap
 	}{
 		{
 			ExpectedError: api.ErrUserIDIsNotString,
@@ -45,7 +44,6 @@ func TestPollDetailsErrors(t *testing.T) {
 
 				return echoContext
 			},
-			ErrorMap: schema.NewSchemaMap(),
 		},
 		{
 			ExpectedError: schema.ErrPollDetailsModel,
@@ -57,7 +55,6 @@ func TestPollDetailsErrors(t *testing.T) {
 
 				return echoContext
 			},
-			ErrorMap: schema.NewSchemaMap(),
 			Model: &MockPollDetailsModel{
 				ResponseError: errors.New("test error"),
 			},
@@ -73,9 +70,13 @@ func TestPollDetailsErrors(t *testing.T) {
 
 		echoContext = test.Input(echoContext)
 
-		factory := api.New()
+		apiClient := api.New(&api.Models{
+			PollDetails: test.Model,
+		}, &api.SchemaMap{
+			PollDetails: &schema.PollDetailsSchemaMap{},
+		})
 
-		err := factory.PollDetails(test.Model, test.ErrorMap)(echoContext)
+		err := apiClient.PollDetails(echoContext)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -87,34 +88,41 @@ func TestPollDetailsSuccessful(t *testing.T) {
 	t.Parallel()
 
 	input := `{"page":4}`
-	pollListModelMock := &MockPollsListModel{
-		ResponseData: &model.PollListResponse{
-			Polls: []model.GeneralPollInfo{
+	pollLDetailsModelMock := &MockPollDetailsModel{
+		ResponseData: &model.PollDetailsResponse{
+			ID:         "pollID",
+			Name:       "pollName",
+			UserAnswer: "answerID",
+			Answers: []model.PollDetailsAnswer{
 				{
-					Name: "Do you want a lift?",
-					ID:   "1",
-				},
-				{
-					Name: "do you want a lightning?",
-					ID:   "2",
+					Name:       "answerName",
+					ID:         "answerID",
+					VotesCount: 2,
 				},
 			},
 		},
 		ResponseError: nil,
 	}
-	expectedResponse := `{"success":true,"data":{"polls":[` +
-		`{"name":"Do you want a lift?","id":"1"},{"name":"do you want a lightning?","id":"2"}` +
-		`]}}` + "\n"
 
 	req := httptest.NewRequest(echo.POST, "http://localhost/polls_list", strings.NewReader(input))
 	rec := httptest.NewRecorder()
 
 	e := echo.New()
-	c := e.NewContext(req, rec)
+	echoContext := e.NewContext(req, rec)
 
-	factory := api.New()
+	echoContext.Set("userID", "testUserID")
 
-	err := factory.PollList(pollListModelMock, schema.NewSchemaMap())(c)
+	apiClient := api.New(&api.Models{
+		PollDetails: pollLDetailsModelMock,
+	}, &api.SchemaMap{
+		PollDetails: &schema.PollDetailsSchemaMap{},
+	})
+
+	err := apiClient.PollDetails(echoContext)
+
+	expectedResponse := `{"success":true,"data":{"id":"pollID","name":"pollName","user_vote":"answerID"` +
+		`,"answers":[{"name":"answerName","id":"answerID","votes_count":2}` +
+		`]}}` + "\n"
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

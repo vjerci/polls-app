@@ -22,7 +22,7 @@ type MockPollVoteModel struct {
 	ResponseError error
 }
 
-func (mock *MockPollVoteModel) PollVote(input *model.PollVoteRequest) (*model.PollVoteResponse, error) {
+func (mock *MockPollVoteModel) Do(input *model.PollVoteRequest) (*model.PollVoteResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -35,7 +35,6 @@ func TestPollVoteErrors(t *testing.T) {
 		ExpectedError error
 		Input         func(echoContext echo.Context) echo.Context
 		Model         *MockPollVoteModel
-		ErrorMap      api.PollVoteSchemaMap
 	}{
 		{
 			ExpectedError: api.ErrUserIDIsNotString,
@@ -47,7 +46,6 @@ func TestPollVoteErrors(t *testing.T) {
 
 				return echoContext
 			},
-			ErrorMap: schema.NewSchemaMap(),
 		},
 		{
 			ExpectedError: schema.ErrPollVoteJSONDecode,
@@ -61,7 +59,6 @@ func TestPollVoteErrors(t *testing.T) {
 
 				return echoContext
 			},
-			ErrorMap: schema.NewSchemaMap(),
 		},
 		{
 			ExpectedError: schema.ErrPollVoteModel,
@@ -73,7 +70,6 @@ func TestPollVoteErrors(t *testing.T) {
 
 				return echoContext
 			},
-			ErrorMap: schema.NewSchemaMap(),
 			Model: &MockPollVoteModel{
 				ResponseError: errors.New("test error"),
 			},
@@ -89,9 +85,13 @@ func TestPollVoteErrors(t *testing.T) {
 
 		echoContext = test.Input(echoContext)
 
-		factory := api.New()
+		apiClient := api.New(&api.Models{
+			PollVote: test.Model,
+		}, &api.SchemaMap{
+			PollVote: &schema.PollVoteSchemaMap{},
+		})
 
-		err := factory.PollVote(test.Model, test.ErrorMap)(echoContext)
+		err := apiClient.PollVote(echoContext)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -106,7 +106,7 @@ func TestPollVoteSuccessful(t *testing.T) {
 	answerID := "testAnswerID"
 	userID := "testUserID"
 
-	model := &MockPollVoteModel{
+	modelMock := &MockPollVoteModel{
 		ResponseData: &model.PollVoteResponse{
 			ModifiedAnswer: true,
 		},
@@ -122,9 +122,13 @@ func TestPollVoteSuccessful(t *testing.T) {
 
 	echoContext.Set("userID", userID)
 
-	factory := api.New()
+	apiClient := api.New(&api.Models{
+		PollVote: modelMock,
+	}, &api.SchemaMap{
+		PollVote: &schema.PollVoteSchemaMap{},
+	})
 
-	err := factory.PollVote(model, schema.NewSchemaMap())(echoContext)
+	err := apiClient.PollVote(echoContext)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)
@@ -135,7 +139,7 @@ func TestPollVoteSuccessful(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code, "response code doesn't match")
 	assert.EqualValues(t, expectedResponse, rec.Body.String(), "response body doesn't match")
 
-	assert.EqualValues(t, pollID, model.InputData.PollID, "expected user id to be passed to model")
-	assert.EqualValues(t, answerID, model.InputData.AnswerID, "expected answer id to be passed to model")
-	assert.EqualValues(t, userID, model.InputData.UserID, "expected user id to be passed to model")
+	assert.EqualValues(t, pollID, modelMock.InputData.PollID, "expected user id to be passed to model")
+	assert.EqualValues(t, answerID, modelMock.InputData.AnswerID, "expected answer id to be passed to model")
+	assert.EqualValues(t, userID, modelMock.InputData.UserID, "expected user id to be passed to model")
 }

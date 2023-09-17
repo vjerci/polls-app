@@ -20,7 +20,7 @@ type MockLoginModel struct {
 	ResponseError error
 }
 
-func (mock *MockLoginModel) Login(input *model.LoginRequest) (*model.LoginResponse, error) {
+func (mock *MockLoginModel) Do(input *model.LoginRequest) (*model.LoginResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -33,7 +33,6 @@ func TestLoginErrors(t *testing.T) {
 		ExpectedError error
 		Input         string
 		Model         *MockLoginModel
-		ErrorMap      api.LoginSchemaMap
 	}{
 		{
 			ExpectedError: schema.ErrLoginJSONDecode,
@@ -45,7 +44,6 @@ func TestLoginErrors(t *testing.T) {
 			Model: &MockLoginModel{
 				ResponseError: errors.New("test error"),
 			},
-			ErrorMap: schema.NewSchemaMap(),
 		},
 	}
 
@@ -53,12 +51,16 @@ func TestLoginErrors(t *testing.T) {
 		req := httptest.NewRequest(echo.GET, "http://localhost/login", strings.NewReader(test.Input))
 		rec := httptest.NewRecorder()
 
-		e := echo.New()
-		c := e.NewContext(req, rec)
+		echoInstance := echo.New()
+		echoContext := echoInstance.NewContext(req, rec)
 
-		factory := api.New()
+		apiClient := api.New(&api.Models{
+			Login: test.Model,
+		}, &api.SchemaMap{
+			Login: &schema.LoginSchemaMap{},
+		})
 
-		err := factory.Login(test.Model, test.ErrorMap)(c)
+		err := apiClient.Login(echoContext)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -82,12 +84,16 @@ func TestLoginSuccessful(t *testing.T) {
 	req := httptest.NewRequest(echo.POST, "http://localhost/login", strings.NewReader(input))
 	rec := httptest.NewRecorder()
 
-	e := echo.New()
-	c := e.NewContext(req, rec)
+	echoInstance := echo.New()
+	echoContext := echoInstance.NewContext(req, rec)
 
-	factory := api.New()
+	apiClient := api.New(&api.Models{
+		Login: loginModelMock,
+	}, &api.SchemaMap{
+		Login: &schema.LoginSchemaMap{},
+	})
 
-	err := factory.Login(loginModelMock, schema.NewSchemaMap())(c)
+	err := apiClient.Login(echoContext)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

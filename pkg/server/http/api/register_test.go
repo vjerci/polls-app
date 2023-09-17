@@ -21,7 +21,7 @@ type MockRegisterModel struct {
 	ResponseError error
 }
 
-func (mock *MockRegisterModel) Register(input *model.RegisterRequest) (accessToken auth.AccessToken, err error) {
+func (mock *MockRegisterModel) Do(input *model.RegisterRequest) (accessToken auth.AccessToken, err error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -34,7 +34,6 @@ func TestRegisterErrors(t *testing.T) {
 		ExpectedError error
 		Input         string
 		Model         *MockRegisterModel
-		ErrorMap      api.RegisterSchemaMap
 	}{
 		{
 			ExpectedError: schema.ErrRegisterJSONDecode,
@@ -46,7 +45,6 @@ func TestRegisterErrors(t *testing.T) {
 			Model: &MockRegisterModel{
 				ResponseError: errors.New("test error"),
 			},
-			ErrorMap: schema.NewSchemaMap(),
 		},
 	}
 
@@ -55,11 +53,15 @@ func TestRegisterErrors(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		e := echo.New()
-		c := e.NewContext(req, rec)
+		echoContext := e.NewContext(req, rec)
 
-		factory := api.New()
+		apiClient := api.New(&api.Models{
+			Register: test.Model,
+		}, &api.SchemaMap{
+			Register: &schema.RegisterSchemaMap{},
+		})
 
-		err := factory.Register(test.Model, test.ErrorMap)(c)
+		err := apiClient.Register(echoContext)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -81,11 +83,15 @@ func TestRegisterSuccessful(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	e := echo.New()
-	c := e.NewContext(req, rec)
+	echoContext := e.NewContext(req, rec)
 
-	factory := api.New()
+	apiClient := api.New(&api.Models{
+		Register: registerModelMock,
+	}, &api.SchemaMap{
+		Register: &schema.RegisterSchemaMap{},
+	})
 
-	err := factory.Register(registerModelMock, schema.NewSchemaMap())(c)
+	err := apiClient.Register(echoContext)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

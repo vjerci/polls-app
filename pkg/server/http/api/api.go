@@ -2,8 +2,6 @@ package api
 
 import (
 	"errors"
-
-	echo "github.com/labstack/echo/v4"
 )
 
 type Response struct {
@@ -14,19 +12,36 @@ type Response struct {
 
 var ErrUserIDIsNotString = errors.New("user id is not string")
 
-type Factory interface {
-	Register(model RegisterModel, schemaMap RegisterSchemaMap) echo.HandlerFunc
-	Login(model LoginModel, schemaMap LoginSchemaMap) echo.HandlerFunc
-
-	PollList(pollListModel PollListModel, schemaMap PollListSchemaMap)
-	PollDetails(pollDetailsModel PollDetailsModel, schemaMap PollDetailsSchemaMap)
-
-	PollCreate(pollCreateModel PollCreateModel, schemaMap PollCreateSchemaMap)
-	PollVote(pollVoteModel PollVoteModel, schemaMap PollVoteSchemaMap)
+type Client struct {
+	models  *Models
+	schemas *SchemaMap
 }
 
-type FactoryImplementation struct{}
+type Models struct {
+	Login    LoginModel
+	Register RegisterModel
 
-func New() *FactoryImplementation {
-	return &FactoryImplementation{}
+	PollList    PollListModel
+	PollDetails PollDetailsModel
+
+	PollCreate PollCreateModel
+	PollVote   PollVoteModel
+}
+
+type SchemaMap struct {
+	Login    LoginSchemaMap
+	Register RegisterSchemaMap
+
+	PollList    PollListSchemaMap
+	PollDetails PollDetailsSchemaMap
+
+	PollCreate PollCreateSchemaMap
+	PollVote   PollVoteSchemaMap
+}
+
+func New(models *Models, schemas *SchemaMap) *Client {
+	return &Client{
+		models:  models,
+		schemas: schemas,
+	}
 }

@@ -35,9 +35,9 @@ func TestPollDetailsErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		schemaMap := schema.NewSchemaMap()
+		schemaMap := &schema.PollDetailsSchemaMap{}
 
-		err := schemaMap.PollDetailsError(test.InputError)
+		err := schemaMap.ErrorHandler(test.InputError)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -61,7 +61,9 @@ func TestPollDetailsResponseConversion(t *testing.T) {
 		},
 	}
 
-	converted := schema.NewSchemaMap().PollDetailsResponse(&output)
+	schemaMap := &schema.PollDetailsSchemaMap{}
+
+	converted := schemaMap.Response(&output)
 
 	assert.EqualValues(t, output.Name, converted.Name, "expected name values to be equal")
 	assert.EqualValues(t, output.ID, converted.ID, "expected id values to be equal")

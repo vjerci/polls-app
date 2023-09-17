@@ -16,6 +16,11 @@ type RegisterRequest struct {
 	Name   string
 }
 
+type RegisterModel struct {
+	RegisterDB RegisterRepository
+	AuthDB     AuthRepository
+}
+
 var ErrRegisterUserIDNotSet = errors.New("user_id is not set")
 var ErrRegisterNameNotSet = errors.New("name is not set")
 
@@ -24,7 +29,7 @@ var ErrRegisterDuplicate = errors.New("tried to register user that is already re
 var ErrRegisterDB = errors.New("failed to create user")
 var ErrRegisterCreateAccessToken = errors.New("failed to create user")
 
-func (client *Client) Register(data *RegisterRequest) (auth.AccessToken, error) {
+func (model *RegisterModel) Do(data *RegisterRequest) (auth.AccessToken, error) {
 	if data.UserID == "" {
 		return "", ErrRegisterUserIDNotSet
 	}
@@ -33,7 +38,7 @@ func (client *Client) Register(data *RegisterRequest) (auth.AccessToken, error) 
 		return "", ErrRegisterNameNotSet
 	}
 
-	err := client.RegisterDB.CreateUser(data.UserID, data.Name)
+	err := model.RegisterDB.CreateUser(data.UserID, data.Name)
 	if err != nil {
 		if errors.Is(err, db.ErrCreateUserInsertCount) {
 			return "", errors.Join(ErrRegisterDuplicate, err)
@@ -42,7 +47,7 @@ func (client *Client) Register(data *RegisterRequest) (auth.AccessToken, error) 
 		return "", errors.Join(ErrRegisterDB, err)
 	}
 
-	token, err := client.AuthDB.CreateToken(data.UserID)
+	token, err := model.AuthDB.CreateToken(data.UserID)
 	if err != nil {
 		return "", errors.Join(ErrRegisterCreateAccessToken, err)
 	}

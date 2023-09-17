@@ -97,11 +97,11 @@ func TestPollVoteErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		client := model.Client{
+		pollVoteModel := model.PollVoteModel{
 			PollVoteDB: test.PollVoteDB,
 		}
 
-		resp, err := client.PollVote(test.Input)
+		resp, err := pollVoteModel.Do(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -128,11 +128,11 @@ func TestPollVoteSuccess(t *testing.T) {
 		ResponseUpsertError:     nil,
 	}
 
-	client := model.Client{
+	pollVoteModel := model.PollVoteModel{
 		PollVoteDB: &dbMock,
 	}
 
-	resp, err := client.PollVote(input)
+	resp, err := pollVoteModel.Do(input)
 
 	if err != nil {
 		t.Fatalf(`expected no err but got "%s" instead`, err)

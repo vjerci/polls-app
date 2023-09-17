@@ -11,11 +11,13 @@ type PollVoteRequest struct {
 	AnswerID string `json:"answer_id"`
 }
 
+type PollVoteSchemaMap struct{}
+
 type PollVoteResponse struct {
 	ModifiedAnswer bool `json:"modified_answer"`
 }
 
-func (mapper *Map) PollVoteResponse(input *model.PollVoteResponse) *PollVoteResponse {
+func (mapper *PollVoteSchemaMap) Response(input *model.PollVoteResponse) *PollVoteResponse {
 	return &PollVoteResponse{
 		ModifiedAnswer: input.ModifiedAnswer,
 	}
@@ -52,7 +54,7 @@ var ErrPollVoteJSONDecode = &UserVisibleError{
 
 var ErrPollVoteModel = errors.New("model poll vote failed to cast vote")
 
-func (mapper *Map) PollVoteError(err error) error {
+func (mapper *PollVoteSchemaMap) ErrorHandler(err error) error {
 	for _, targetError := range handledPollVoteErrors {
 		if errors.Is(err, targetError.Err) {
 			return targetError

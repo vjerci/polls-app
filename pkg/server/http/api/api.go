@@ -12,7 +12,7 @@ type Response struct {
 
 var ErrUserIDIsNotString = errors.New("user id is not string")
 
-type Client struct {
+type API struct {
 	models  *Models
 	schemas *SchemaMap
 }
@@ -39,8 +39,8 @@ type SchemaMap struct {
 	PollVote   PollVoteSchemaMap
 }
 
-func New(models *Models, schemas *SchemaMap) *Client {
-	return &Client{
+func New(models *Models, schemas *SchemaMap) *API {
+	return &API{
 		models:  models,
 		schemas: schemas,
 	}

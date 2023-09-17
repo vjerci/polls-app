@@ -10,7 +10,7 @@ import (
 var ErrUserAnswerNotFound = errors.New("no record for user answer")
 var ErrUserAnswerQuery = errors.New("failed to query user answer")
 
-func (client *Client) GetUserAnswer(pollID, userID string) (answerID string, err error) {
+func (client *DB) GetUserAnswer(pollID, userID string) (answerID string, err error) {
 	err = client.Pool.QueryRow(
 		context.Background(),
 		`SELECT answers.id AS id FROM answers
@@ -36,7 +36,7 @@ var ErrUpsertUserAnswerQuery = errors.New("failed to query user answers for upse
 var ErrUpsertUserAnswerUpdate = errors.New("failed to update user answer for upserting")
 var ErrUpsertUserAnswerInsert = errors.New("failed to insert user answer for upserting")
 
-func (client *Client) UpsertUserAnswer(pollID, answerID, userID string) (modified bool, err error) {
+func (client *DB) UpsertUserAnswer(pollID, answerID, userID string) (modified bool, err error) {
 	oldAnswerID, err := client.GetUserAnswer(pollID, userID)
 
 	if err != nil && !errors.Is(err, ErrUserAnswerNotFound) {

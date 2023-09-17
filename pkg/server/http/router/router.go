@@ -1,4 +1,4 @@
-package route
+package router
 
 import (
 	echo "github.com/labstack/echo/v4"
@@ -6,7 +6,7 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
 )
 
-type Handler struct {
+type Router struct {
 	Register echo.HandlerFunc
 	Login    echo.HandlerFunc
 
@@ -17,7 +17,7 @@ type Handler struct {
 	PollVote   echo.HandlerFunc
 }
 
-func (handler *Handler) Build() *echo.Echo {
+func (handler *Router) Build() *echo.Echo {
 	router := echo.New()
 
 	router.Use(middleware.Logger())

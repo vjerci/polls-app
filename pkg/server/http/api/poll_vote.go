@@ -20,7 +20,7 @@ type PollVoteSchemaMap interface {
 	Response(*model.PollVoteResponse) *schema.PollVoteResponse
 }
 
-func (client *Client) PollVote(echoContext echo.Context) error {
+func (client *API) PollVote(echoContext echo.Context) error {
 	userID := echoContext.Get("userID")
 
 	userIDS, ok := userID.(string)

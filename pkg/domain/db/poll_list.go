@@ -17,7 +17,7 @@ type PollListData struct {
 var ErrPollListQuery = errors.New("errors querying poll list")
 var ErrPollListCollectRows = errors.New("error collecting poll list rows")
 
-func (client *Client) GetPollList(page int) ([]PollListData, error) {
+func (client *DB) GetPollList(page int) ([]PollListData, error) {
 	rows, err := client.Pool.Query(
 		context.Background(),
 		"SELECT name, id FROM polls ORDER BY date_created OFFSET $1 LIMIT $2;",

@@ -19,7 +19,7 @@ type PollListSchemaMap interface {
 	Response(input *model.PollListResponse) *schema.PollListResponse
 }
 
-func (client *Client) PollList(echoContext echo.Context) error {
+func (client *API) PollList(echoContext echo.Context) error {
 	var data schema.PollListRequest
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)

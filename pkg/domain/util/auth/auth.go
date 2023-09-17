@@ -9,12 +9,12 @@ import (
 
 var signingMethod = jwt.SigningMethodHS256
 
-type Client struct {
+type Auth struct {
 	JWTSigningKey []byte
 }
 
-func New(jwtSigningKey string) *Client {
-	return &Client{
+func New(jwtSigningKey string) *Auth {
+	return &Auth{
 		JWTSigningKey: []byte(jwtSigningKey),
 	}
 }
@@ -23,7 +23,7 @@ type AccessToken string
 
 var ErrSigningFailed = errors.New("failed to sign claims")
 
-func (client *Client) CreateToken(userID string) (AccessToken, error) {
+func (client *Auth) CreateToken(userID string) (AccessToken, error) {
 	t := jwt.NewWithClaims(signingMethod,
 		jwt.MapClaims{
 			"user_id": userID,
@@ -42,7 +42,7 @@ var ErrDecodeClaimsMissing = errors.New("missing claims from token")
 var ErrDecodeInvalidToken = errors.New("got invalid token")
 var ErrDecodeUserIDNotString = errors.New("user id is not of type string")
 
-func (client *Client) Decode(input AccessToken) (userID string, err error) {
+func (client *Auth) Decode(input AccessToken) (userID string, err error) {
 	token, err := jwt.Parse(string(input), func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("%w\n signing method is %v", ErrDecodeUnexpectedSignMethod, token.Header["alg"])

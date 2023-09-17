@@ -5,7 +5,7 @@ import (
 )
 
 // UserVisibleError is used for showing usage errors to users for easier api usage.
-// They also enhance error messages with status code.
+// They also enhance error messages with a http status code.
 type UserVisibleError struct {
 	Err    error
 	Status int

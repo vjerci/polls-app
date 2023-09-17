@@ -10,20 +10,20 @@ import (
 var ErrConnect = errors.New("unable to connect to postgres")
 var ErrPing = errors.New("unable to ping postgres")
 
-type Client struct {
+type DB struct {
 	PostgresURL string
 	Pool        *pgxpool.Pool
 }
 
 // postgresURL := "postgres://username:password@localhost:5432/database_name"
-func New(postgresURL string) *Client {
-	return &Client{
+func New(postgresURL string) *DB {
+	return &DB{
 		PostgresURL: postgresURL,
 		Pool:        nil,
 	}
 }
 
-func (client *Client) Connect() error {
+func (client *DB) Connect() error {
 	conn, err := pgxpool.New(context.Background(), client.PostgresURL)
 	if err != nil {
 		return errors.Join(ErrConnect, err)
@@ -38,6 +38,6 @@ func (client *Client) Connect() error {
 	return nil
 }
 
-func (client *Client) Close() {
+func (client *DB) Close() {
 	client.Pool.Close()
 }

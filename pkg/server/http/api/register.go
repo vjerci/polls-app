@@ -20,7 +20,7 @@ type RegisterSchemaMap interface {
 	Response(input auth.AccessToken) string
 }
 
-func (client *Client) Register(echoContext echo.Context) error {
+func (client *API) Register(echoContext echo.Context) error {
 	var data schema.RegisterRequest
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)

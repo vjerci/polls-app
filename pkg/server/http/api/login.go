@@ -19,7 +19,7 @@ type LoginSchemaMap interface {
 	Response(input *model.LoginResponse) *schema.LoginResponse
 }
 
-func (client *Client) Login(echoContext echo.Context) error {
+func (client *API) Login(echoContext echo.Context) error {
 	var data schema.LoginRequest
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)

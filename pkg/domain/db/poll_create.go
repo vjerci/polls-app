@@ -22,7 +22,7 @@ type PollCreateAnswer struct {
 var ErrPollCreateInsert = errors.New("failed to insert entry into polls table")
 var ErrPollCreateAnswerInsert = errors.New("failed to insert entry into answer table")
 
-func (client *Client) CreatePoll(name string, answers []string) (*PollCreateResponse, error) {
+func (client *DB) CreatePoll(name string, answers []string) (*PollCreateResponse, error) {
 	var pollID string
 
 	err := client.Pool.QueryRow(

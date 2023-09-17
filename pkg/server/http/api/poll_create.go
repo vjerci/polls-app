@@ -19,7 +19,7 @@ type PollCreateSchemaMap interface {
 	Response(input *model.PollCreateResponse) *schema.PollCreateResponse
 }
 
-func (client *Client) PollCreate(echoContext echo.Context) error {
+func (client *API) PollCreate(echoContext echo.Context) error {
 	var data schema.PollCreateRequest
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)

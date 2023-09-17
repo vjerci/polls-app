@@ -15,7 +15,7 @@ type PollDetailsResponse struct {
 var ErrPollDetailsQuery = errors.New("failed to query polls table")
 var ErrPollDetailsNotFound = errors.New("poll does not exists")
 
-func (client *Client) GetPollDetails(pollID string) (*PollDetailsResponse, error) {
+func (client *DB) GetPollDetails(pollID string) (*PollDetailsResponse, error) {
 	var pollName string
 	err := client.Pool.QueryRow(
 		context.Background(),
@@ -46,7 +46,7 @@ type PollDetailsAnswer struct {
 var ErrPollDetailsAnswerQuery = errors.New("failed to query answers table")
 var ErrPollDetailsAnswerScan = errors.New("failed to scan answers table")
 
-func (client *Client) GetPollDetailsAnswers(pollID string) ([]PollDetailsAnswer, error) {
+func (client *DB) GetPollDetailsAnswers(pollID string) ([]PollDetailsAnswer, error) {
 	rows, err := client.Pool.Query(
 		context.Background(),
 		`SELECT answers.name AS name, answers.id AS id, count(user_answers.id) as count 

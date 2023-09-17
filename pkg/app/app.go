@@ -9,7 +9,7 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/route"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/router"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
@@ -29,7 +29,7 @@ func New(settings config.Config) (*echo.Echo, error) {
 		newSchemaMap(),
 	)
 
-	routeHandler := route.Handler{
+	routeHandler := router.Router{
 		Register:    apiClient.Register,
 		Login:       apiClient.Login,
 		PollList:    apiClient.PollList,
@@ -41,7 +41,7 @@ func New(settings config.Config) (*echo.Echo, error) {
 	return routeHandler.Build(), nil
 }
 
-func newModel(dbClient *db.Client, authClient model.AuthRepository) *api.Models {
+func newModel(dbClient *db.DB, authClient model.AuthRepository) *api.Models {
 	return &api.Models{
 		Login: &model.LoginModel{
 			AuthDB: authClient,

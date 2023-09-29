@@ -35,23 +35,23 @@ func (mapper *PollCreateSchemaMap) Response(input *model.PollCreateResponse) *Po
 }
 
 var ErrPollCreateNameEmpty = &echo.HTTPError{
-	Message:  model.ErrPollCreateNameEmpty,
+	Message:  `input field "name" can't be empty`,
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrPollCreateAnswersLen = &echo.HTTPError{
-	Message:  model.ErrPollCreateAnswersLen,
+	Message:  `input field "answers" needs minimum 2 answers`,
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrPollCreateAnswerEmpty = &echo.HTTPError{
-	Message:  model.ErrPollCreateAnswerEmpty,
+	Message:  `input field "answers" can't contain empty strings`,
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 
 var ErrPollCreateJSONDecode = &echo.HTTPError{
-	Message:  errors.New("failed to decode create poll json body"),
+	Message:  "failed to decode poll_create input json",
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }

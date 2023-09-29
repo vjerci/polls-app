@@ -16,7 +16,7 @@ func (client *Client) ErrorHandler(err error, echoContext echo.Context) {
 			message = messageString
 		}
 
-		echoContext.Logger().Errorf(`error serving http error "%s":"%s"`, httpError.Message, httpError.Internal)
+		echoContext.Logger().Errorf(`serving http error "%s":"%s"`, httpError.Message, httpError.Internal)
 
 		err := echoContext.JSON(httpError.Code, api.Response{
 			Success: false,
@@ -27,9 +27,13 @@ func (client *Client) ErrorHandler(err error, echoContext echo.Context) {
 		if err != nil {
 			echoContext.Logger().Errorf("failed to serve error response %s", err)
 		}
+
+		return
 	}
 
 	defaultMessage := "internal server error"
+
+	echoContext.Logger().Errorf(`serving generic error response "%s""`, err)
 
 	err = echoContext.JSON(http.StatusInternalServerError, api.Response{
 		Success: false,

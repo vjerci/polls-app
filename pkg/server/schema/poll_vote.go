@@ -25,35 +25,35 @@ func (mapper *PollVoteSchemaMap) Response(input *model.PollVoteResponse) *PollVo
 }
 
 var ErrPollVoteInvalidVote = &echo.HTTPError{
-	Message:  model.ErrPollVoteAnswerNotFound,
+	Message:  `couldn't find an answer for given input "answer_id"`,
 	Code:     http.StatusNotFound,
 	Internal: nil,
 }
 
 var ErrPollVoteInvalidPollID = &echo.HTTPError{
-	Message:  model.ErrPollVotePollIDEmpty,
+	Message:  "inputed poll id is empty",
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrPollVoteInvalidAnswerID = &echo.HTTPError{
-	Message:  model.ErrPollVoteAnswerIDEmpty,
+	Message:  `input field "answer_id" can't be empty`,
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrPollVoteInvalidUserID = &echo.HTTPError{
-	Message:  model.ErrPollVoteUserIDEmpty,
+	Message:  `user_id can't be empty`,
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 
 var ErrPollVoteJSONDecode = &echo.HTTPError{
-	Message:  errors.New("failed to decode poll vote json body"),
+	Message:  "failed to decode poll vote json body",
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 
 var ErrPollVoteModel = &echo.HTTPError{
-	Message:  errors.New("internal server error"),
+	Message:  "internal server error",
 	Code:     http.StatusInternalServerError,
 	Internal: nil,
 }

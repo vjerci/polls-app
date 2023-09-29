@@ -46,8 +46,8 @@ func (mapper *PollListSchemaMap) Response(input *model.PollListResponse) *PollLi
 }
 
 var ErrPollListInvalidPage = &echo.HTTPError{
-	Code:     http.StatusBadRequest,
 	Message:  "invalid page specified",
+	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrPollListNoData = &echo.HTTPError{

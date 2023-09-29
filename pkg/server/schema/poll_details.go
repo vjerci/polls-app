@@ -42,17 +42,17 @@ func (mapper *PollDetailsSchemaMap) Response(input *model.PollDetailsResponse) *
 }
 
 var ErrPollDetailsEmptyPollID = &echo.HTTPError{
-	Message:  model.ErrPollDetailsIDEmpty,
+	Message:  "inputted poll id can't be empty",
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrPollDetailsEmptyUserID = &echo.HTTPError{
-	Message:  model.ErrPollDetailsUserIDEmpty,
+	Message:  "inputted user id can't be empty",
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrPollDetailsNotFound = &echo.HTTPError{
-	Message:  model.ErrPollDetailsNoPoll,
+	Message:  "poll with a given id not found",
 	Code:     http.StatusNotFound,
 	Internal: nil,
 }

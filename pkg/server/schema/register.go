@@ -50,7 +50,7 @@ var ErrRegisterModel = &echo.HTTPError{
 }
 
 var ErrRegisterJSONDecode = &echo.HTTPError{
-	Message:  errors.New("failed to decode registration json body"),
+	Message:  "failed to decode registration json body",
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }

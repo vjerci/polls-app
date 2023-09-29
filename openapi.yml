@@ -1,0 +1,298 @@
+openapi: 3.0.0
+info:
+    version: 0.0.1
+    title: "Polls app API"
+servers:
+    - url: "http://localhost:1313/api"
+      description: "The polls app development API server"
+paths:
+    #begin /auth
+    /auth/register:
+        put:
+            tags:
+                - Authentication
+            description: "register a new member for polls app"
+            requestBody:
+                description: "input details for user registration"
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            example: { "user_id": "testUser", "name": "Jhon" }
+                            properties:
+                                user_id:
+                                    type: string
+                                    description: "unique idenetifier which destinguishes user on server"
+                                name:
+                                    type: string
+                                    description: "display name of a user"
+            responses:
+                200:
+                    description: "Successfully registered user"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: "indicates if action was completed successfully"
+                                    data:
+                                        type: string
+                                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVzdDEifQ.jYfFz1bKnwp4o2MVVUTwiVMtoRfyBZeaXxuzAzfSeBU"
+                                        description: "login bearer token"
+    /auth/login:
+        post:
+            tags:
+                - Authentication
+            description: "login with existing member for polls app"
+            requestBody:
+                description: "input details for user login"
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            example: { "user_id": "testUser" }
+                            properties:
+                                user_id:
+                                    type: string
+                                    description: "unique idenetifier which destinguishes user on server"
+            responses:
+                200:
+                    description: "Successfully logged in user"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: "indicates if action was completed successfully"
+                                    data:
+                                        type: object
+                                        properties:
+                                            name:
+                                                type: string
+                                                example: "Jhon"
+                                            token:
+                                                type: string
+                                                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVzdDEifQ.jYfFz1bKnwp4o2MVVUTwiVMtoRfyBZeaXxuzAzfSeBU"
+                                                description: "login bearer token"
+    #end /auth
+    #begin /poll
+    /poll:
+        get:
+            tags:
+                - Poll
+            description: "List paginated polls general info sorted by their date of creation"
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVzdDEifQ.jYfFz1bKnwp4o2MVVUTwiVMtoRfyBZeaXxuzAzfSeBU"
+                  schema:
+                      type: string
+            requestBody:
+                description: "input details for geting paginated polls"
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            example: { "page": "0" }
+                            properties:
+                                page:
+                                    type: integer
+                                    description: "which page to get"
+            responses:
+                200:
+                    description: "Successfully got pulls list"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: "indicates if action was completed successfully"
+                                    data:
+                                        type: object
+                                        properties:
+                                            has_next:
+                                                type: boolean
+                                                description: "indicates if a next page exists"
+                                                example: true
+                                            polls:
+                                                type: array
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        name:
+                                                            type: string
+                                                            description: "question for a given poll"
+                                                            example: "Do you want an elevator?"
+                                                        id:
+                                                            type: string
+                                                            description: "unique id of a given poll"
+                                                            example: "ea61962b-afa4-44a0-9384-f3937a34e6f2"
+        put:
+            tags:
+                - Poll
+            description: "Create a new poll"
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVzdDEifQ.jYfFz1bKnwp4o2MVVUTwiVMtoRfyBZeaXxuzAzfSeBU"
+                  schema:
+                      type: string
+            requestBody:
+                description: "input details for creating new poll"
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            example:
+                                {
+                                    "name": "Do you want to repaint staircase?",
+                                    "answers": ["yes", "no"],
+                                }
+                            properties:
+                                name:
+                                    type: string
+                                    description: "poll display name"
+                                answers:
+                                    type: array
+                                    minItems: 2
+                                    description: "a list of possible answers"
+                                    items:
+                                        type: string
+                                        description: "a possible answer"
+            responses:
+                200:
+                    description: "Successfully created poll"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: "indicates if action was completed successfully"
+                                    data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: string
+                                                description: "an id of a created poll"
+                                                example: "ea61962b-afa4-44a0-9384-f3937a34e6f2"
+                                            answers_ids:
+                                                type: array
+                                                description: "a list of ids of created answers"
+                                                items:
+                                                    type: string
+                                                    example:
+                                                        - "af846961-0c59-4bdd-8b47-84267c088755"
+                                                        - "60dfa963-8232-46cd-bacd-b90afc6512b4"
+    /poll/{id}:
+        get:
+            tags:
+                - Poll
+            description: "Get poll details by queried by poll id"
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVzdDEifQ.jYfFz1bKnwp4o2MVVUTwiVMtoRfyBZeaXxuzAzfSeBU"
+                  schema:
+                      type: string
+                - in: path
+                  name: id
+                  description: Unique poll identifier
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: "Successfully got poll details"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: "indicates if action was completed successfully"
+                                    data:
+                                        type: object
+                                        properties:
+                                            name:
+                                                type: string
+                                                description: "question for a given poll"
+                                                example: "Do you want an elevator?"
+                                            id:
+                                                type: string
+                                                description: "unique id of a given poll"
+                                                example: "ea61962b-afa4-44a0-9384-f3937a34e6f2"
+                                            user_vote:
+                                                type: string
+                                                example: "af846961-0c59-4bdd-8b47-84267c088755"
+                                                description: "unique id for an answer user has voted for or empty string"
+                                            answers:
+                                                type: array
+                                                example:
+                                                    - name: "yes"
+                                                      id: "60dfa963-8232-46cd-bacd-b90afc6512b4"
+                                                      votes_count: 20
+                                                    - name: "no"
+                                                      id: "c90ec46d-9d5f-4c48-b443-67c319d6ed1c"
+                                                      votes_count: 25
+                                                items:
+                                                    type: object
+                                                    properties:
+                                                        name:
+                                                            type: string
+                                                            description: "poll answer display name"
+                                                            example: "yes"
+                                                        id:
+                                                            type: string
+                                                            description: "unique identifier of poll answer"
+                                                            example: "af846961-0c59-4bdd-8b47-84267c088755"
+                                                        votes_count:
+                                                            type: integer
+                                                            description: "how many people have voted for given answer"
+                                                            example: 25
+    /poll/{id}/vote:
+        post:
+            tags:
+                - Poll
+            description: "vote for an answer of a poll"
+            parameters:
+                - in: header
+                  name: Authorization
+                  required: true
+                  example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVzdDEifQ.jYfFz1bKnwp4o2MVVUTwiVMtoRfyBZeaXxuzAzfSeBU"
+                  schema:
+                      type: string
+                - in: path
+                  name: id
+                  description: Unique poll identifier
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: "Successfully casted vote"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: "indicates if action was completed successfully"
+                                    data:
+                                        type: object
+                                        properties:
+                                            ModifiedAnswer:
+                                                type: boolean
+                                                description: "whether user has changed his vote"

@@ -1,7 +1,9 @@
 package api
 
 import (
-	"errors"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Response struct {
@@ -10,7 +12,11 @@ type Response struct {
 	Error   *string     `json:"error,omitempty"`
 }
 
-var ErrUserIDIsNotString = errors.New("user id is not string")
+var ErrUserIDIsNotString = &echo.HTTPError{
+	Message:  "internal server error, user_id is not string",
+	Code:     http.StatusInternalServerError,
+	Internal: nil,
+}
 
 type API struct {
 	models  *Models

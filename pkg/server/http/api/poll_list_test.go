@@ -30,7 +30,7 @@ func TestPollListErrors(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		ExpectedError error
+		ExpectedError *echo.HTTPError
 		Input         string
 		Model         *MockPollsListModel
 	}{
@@ -62,9 +62,14 @@ func TestPollListErrors(t *testing.T) {
 
 		err := apiClient.PollList(echoContext)
 
-		if !errors.Is(err, test.ExpectedError) {
-			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
+		//nolint:errorlint
+		errHTTP, ok := err.(*echo.HTTPError)
+		if !ok {
+			t.Fatal("expected http error")
 		}
+
+		assert.EqualValues(t, test.ExpectedError.Code, errHTTP.Code, "expected http status code to match")
+		assert.EqualValues(t, test.ExpectedError.Message, errHTTP.Message, "expected error message to match")
 	}
 }
 
@@ -84,12 +89,13 @@ func TestPollListSuccessful(t *testing.T) {
 					ID:   "2",
 				},
 			},
+			HasNext: true,
 		},
 		ResponseError: nil,
 	}
-	expectedResponse := `{"success":true,"data":{"polls":[` +
-		`{"name":"Do you want a lift?","id":"1"},{"name":"do you want a lightning?","id":"2"}` +
-		`]}}` + "\n"
+	expectedResponse := `{"success":true,"data":{"polls":` +
+		`[{"name":"Do you want a lift?","id":"1"},{"name":"do you want a lightning?","id":"2"}]` +
+		`,"has_next":true` + `}}` + "\n"
 
 	req := httptest.NewRequest(echo.POST, "http://localhost/polls_list", strings.NewReader(input))
 	rec := httptest.NewRecorder()

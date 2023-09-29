@@ -9,6 +9,7 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api/middleware"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/router"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
@@ -29,6 +30,13 @@ func New(settings config.Config) (*echo.Echo, error) {
 		newSchemaMap(),
 	)
 
+	middlewareClient := middleware.Client{
+		AuthRepo: authClient,
+		UserRepo: &model.UserModel{
+			UserDB: dbClient,
+		},
+	}
+
 	routeHandler := router.Router{
 		Register:    apiClient.Register,
 		Login:       apiClient.Login,
@@ -36,6 +44,9 @@ func New(settings config.Config) (*echo.Echo, error) {
 		PollCreate:  apiClient.PollCreate,
 		PollDetails: apiClient.PollDetails,
 		PollVote:    apiClient.PollVote,
+
+		MiddlewareWithAuth: middlewareClient.WithAuth,
+		ErrorHandler:       middlewareClient.ErrorHandler,
 	}
 
 	return routeHandler.Build(), nil
@@ -52,7 +63,8 @@ func newModel(dbClient *db.DB, authClient model.AuthRepository) *api.Models {
 			AuthDB:     authClient,
 		},
 		PollList: &model.PollListModel{
-			PollListDB: dbClient,
+			PollListDB:          dbClient,
+			PollCountRepository: dbClient,
 		},
 		PollDetails: &model.PollDetailsModel{
 			PollDetailsDB: dbClient,

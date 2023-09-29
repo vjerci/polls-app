@@ -11,7 +11,8 @@ type PollListRequest struct {
 }
 
 type PollListResponse struct {
-	Polls []GeneralPollInfo
+	Polls   []GeneralPollInfo
+	HasNext bool
 }
 
 type GeneralPollInfo struct {
@@ -23,13 +24,19 @@ type PollListRepository interface {
 	GetPollList(page int) ([]db.PollListData, error)
 }
 
+type PollCountRepository interface {
+	HasNextPage(page int) (bool, error)
+}
+
 type PollListModel struct {
-	PollListDB PollListRepository
+	PollListDB          PollListRepository
+	PollCountRepository PollCountRepository
 }
 
 var ErrPollListInvalidPage = errors.New("invalid poll list page specified ")
 var ErrPollListNoPolls = errors.New("error getting poll list, no data available")
 var ErrPollListDB = errors.New("error getting poll list data")
+var ErrPollListDBNextPage = errors.New("error getting next page from db")
 
 func (model *PollListModel) Get(data *PollListRequest) (*PollListResponse, error) {
 	if data.Page < 0 {
@@ -53,7 +60,13 @@ func (model *PollListModel) Get(data *PollListRequest) (*PollListResponse, error
 		}
 	}
 
+	hasNext, err := model.PollCountRepository.HasNextPage(data.Page)
+	if err != nil {
+		return nil, errors.Join(ErrPollListDBNextPage, err)
+	}
+
 	return &PollListResponse{
-		Polls: pollInfos,
+		Polls:   pollInfos,
+		HasNext: hasNext,
 	}, nil
 }

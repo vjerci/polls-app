@@ -49,11 +49,10 @@ var ErrPollDetailsAnswerScan = errors.New("failed to scan answers table")
 func (client *DB) GetPollDetailsAnswers(pollID string) ([]PollDetailsAnswer, error) {
 	rows, err := client.Pool.Query(
 		context.Background(),
-		`SELECT answers.name AS name, answers.id AS id, count(user_answers.id) as count 
-			FROM answers
-		 JOIN user_answers ON  user_answers.answer_id=answers.id
-			GROUP_BY user_answers.answer_id;
-		WHERE answers.poll_id=$1 
+		`SELECT answers.name AS name, answers.id AS id, count(user_answers.user_id) as count FROM answers
+			LEFT JOIN user_answers ON  answers.id=user_answers.answer_id
+		GROUP BY answers.id
+		HAVING answers.poll_id=$1
 		`,
 		pollID,
 	)

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -16,7 +15,7 @@ type PollVoteModel interface {
 }
 
 type PollVoteSchemaMap interface {
-	ErrorHandler(err error) error
+	ErrorHandler(err error) *echo.HTTPError
 	Response(*model.PollVoteResponse) *schema.PollVoteResponse
 }
 
@@ -25,17 +24,14 @@ func (client *API) PollVote(echoContext echo.Context) error {
 
 	userIDS, ok := userID.(string)
 	if !ok {
-		return errors.Join(ErrUserIDIsNotString, fmt.Errorf("got %#v for userID", userID))
+		return ErrUserIDIsNotString.WithInternal(fmt.Errorf("got %#v for userID", userID))
 	}
 
 	var data schema.PollVoteRequest
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
 	if err != nil {
-		return &schema.UserVisibleError{
-			Err:    errors.Join(schema.ErrPollVoteJSONDecode, err),
-			Status: schema.ErrPollVoteJSONDecode.Status,
-		}
+		return schema.ErrPollVoteJSONDecode.WithInternal(err)
 	}
 
 	resp, err := client.models.PollVote.Do(&model.PollVoteRequest{

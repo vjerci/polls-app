@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 )
@@ -26,37 +27,46 @@ func (mapper *RegisterSchemaMap) Response(input auth.AccessToken) string {
 	return string(input)
 }
 
-var ErrRegisterUserIDNotSet = &UserVisibleError{
-	Err:    model.ErrRegisterUserIDNotSet,
-	Status: http.StatusBadRequest,
+var ErrRegisterUserIDNotSet = &echo.HTTPError{
+	Message:  model.ErrRegisterUserIDNotSet,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrRegisterNameNotSet = &UserVisibleError{
-	Err:    model.ErrRegisterNameNotSet,
-	Status: http.StatusBadRequest,
+var ErrRegisterNameNotSet = &echo.HTTPError{
+	Message:  model.ErrRegisterNameNotSet,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrRegisterUserDuplicate = &UserVisibleError{
-	Err:    model.ErrRegisterDuplicate,
-	Status: http.StatusConflict,
-}
-var handledRegisterErrors = []*UserVisibleError{
-	ErrRegisterUserIDNotSet,
-	ErrRegisterNameNotSet,
-	ErrRegisterUserDuplicate,
+var ErrRegisterUserDuplicate = &echo.HTTPError{
+	Message:  model.ErrRegisterDuplicate,
+	Code:     http.StatusConflict,
+	Internal: nil,
 }
 
-var ErrRegisterModel = errors.New("model failed to register")
-
-var ErrRegisterJSONDecode = &UserVisibleError{
-	Err:    errors.New("failed to decode registration json body"),
-	Status: http.StatusBadRequest,
+var ErrRegisterModel = &echo.HTTPError{
+	Message:  "internal server error",
+	Code:     http.StatusInternalServerError,
+	Internal: nil,
 }
 
-func (mapper *RegisterSchemaMap) ErrorHandler(err error) error {
-	for _, targetError := range handledRegisterErrors {
-		if errors.Is(err, targetError.Err) {
-			return targetError
-		}
+var ErrRegisterJSONDecode = &echo.HTTPError{
+	Message:  errors.New("failed to decode registration json body"),
+	Code:     http.StatusBadRequest,
+	Internal: nil,
+}
+
+func (mapper *RegisterSchemaMap) ErrorHandler(err error) *echo.HTTPError {
+	if errors.Is(err, model.ErrRegisterUserIDNotSet) {
+		return ErrRegisterUserIDNotSet.WithInternal(err)
 	}
 
-	return errors.Join(ErrRegisterModel, err)
+	if errors.Is(err, model.ErrRegisterNameNotSet) {
+		return ErrRegisterNameNotSet.WithInternal(err)
+	}
+
+	if errors.Is(err, model.ErrRegisterDuplicate) {
+		return ErrRegisterUserDuplicate.WithInternal(err)
+	}
+
+	return ErrRegisterModel.WithInternal(err)
 }

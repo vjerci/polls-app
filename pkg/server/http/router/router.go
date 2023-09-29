@@ -15,10 +15,15 @@ type Router struct {
 
 	PollCreate echo.HandlerFunc
 	PollVote   echo.HandlerFunc
+
+	MiddlewareWithAuth echo.MiddlewareFunc
+	ErrorHandler       echo.HTTPErrorHandler
 }
 
 func (handler *Router) Build() *echo.Echo {
 	router := echo.New()
+
+	router.HTTPErrorHandler = handler.ErrorHandler
 
 	router.Use(middleware.Logger())
 	router.Use(middleware.Gzip())
@@ -39,11 +44,11 @@ func (handler *Router) Build() *echo.Echo {
 	auth.PUT("/register", handler.Register)
 	auth.POST("/login", handler.Login)
 
-	endpoint.GET("/poll", handler.PollList)
-	endpoint.GET("/poll/:id", handler.PollDetails)
-
-	endpoint.PUT("/poll", handler.PollCreate)
-	endpoint.POST("/poll/:id/vote", handler.PollVote)
+	poll := endpoint.Group("/poll", handler.MiddlewareWithAuth)
+	poll.GET("", handler.PollList)
+	poll.GET("/:id", handler.PollDetails)
+	poll.PUT("", handler.PollCreate)
+	poll.POST("/:id/vote", handler.PollVote)
 
 	return router
 }

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
@@ -15,7 +14,7 @@ type LoginModel interface {
 }
 
 type LoginSchemaMap interface {
-	ErrorHandler(err error) error
+	ErrorHandler(err error) *echo.HTTPError
 	Response(input *model.LoginResponse) *schema.LoginResponse
 }
 
@@ -24,10 +23,7 @@ func (client *API) Login(echoContext echo.Context) error {
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
 	if err != nil {
-		return &schema.UserVisibleError{
-			Err:    errors.Join(schema.ErrLoginJSONDecode, err),
-			Status: schema.ErrLoginJSONDecode.Status,
-		}
+		return schema.ErrLoginJSONDecode.WithInternal(err)
 	}
 
 	resp, err := client.models.Login.Do(data.ToModel())

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
@@ -15,7 +14,7 @@ type PollCreateModel interface {
 }
 
 type PollCreateSchemaMap interface {
-	ErrorHandler(err error) error
+	ErrorHandler(err error) *echo.HTTPError
 	Response(input *model.PollCreateResponse) *schema.PollCreateResponse
 }
 
@@ -24,10 +23,7 @@ func (client *API) PollCreate(echoContext echo.Context) error {
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
 	if err != nil {
-		return &schema.UserVisibleError{
-			Err:    errors.Join(schema.ErrPollCreateJSONDecode, err),
-			Status: schema.ErrPollCreateJSONDecode.Status,
-		}
+		return schema.ErrPollCreateJSONDecode.WithInternal(err)
 	}
 
 	resp, err := client.models.PollCreate.Create(data.ToModel())

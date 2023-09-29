@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -15,7 +14,7 @@ type PollDetailsModel interface {
 }
 
 type PollDetailsSchemaMap interface {
-	ErrorHandler(err error) error
+	ErrorHandler(err error) *echo.HTTPError
 	Response(input *model.PollDetailsResponse) *schema.PollDetailsResponse
 }
 
@@ -24,7 +23,7 @@ func (client *API) PollDetails(echoContext echo.Context) error {
 
 	userIDS, ok := userID.(string)
 	if !ok {
-		return errors.Join(ErrUserIDIsNotString, fmt.Errorf("got %#v for userID", userID))
+		return ErrUserIDIsNotString.WithInternal(fmt.Errorf("got %#v for userID", userID))
 	}
 
 	resp, err := client.models.PollDetails.Get(&model.PollDetailsRequest{

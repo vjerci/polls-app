@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
@@ -16,7 +15,7 @@ type RegisterModel interface {
 }
 
 type RegisterSchemaMap interface {
-	ErrorHandler(err error) error
+	ErrorHandler(err error) *echo.HTTPError
 	Response(input auth.AccessToken) string
 }
 
@@ -25,10 +24,7 @@ func (client *API) Register(echoContext echo.Context) error {
 
 	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
 	if err != nil {
-		return &schema.UserVisibleError{
-			Err:    errors.Join(schema.ErrRegisterJSONDecode, err),
-			Status: schema.ErrRegisterJSONDecode.Status,
-		}
+		return schema.ErrRegisterJSONDecode.WithInternal(err)
 	}
 
 	token, err := client.models.Register.Do(data.ToModel())

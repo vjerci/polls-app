@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
@@ -20,7 +21,8 @@ func (req *PollListRequest) ToModel() *model.PollListRequest {
 type PollListSchemaMap struct{}
 
 type PollListResponse struct {
-	Polls []GeneralPollInfo `json:"polls"`
+	Polls   []GeneralPollInfo `json:"polls"`
+	HasNext bool              `json:"has_next"`
 }
 
 type GeneralPollInfo struct {
@@ -38,36 +40,42 @@ func (mapper *PollListSchemaMap) Response(input *model.PollListResponse) *PollLi
 	}
 
 	return &PollListResponse{
-		Polls: polls,
+		Polls:   polls,
+		HasNext: input.HasNext,
 	}
 }
 
-var ErrPollListInvalidPage = &UserVisibleError{
-	Err:    model.ErrPollListInvalidPage,
-	Status: http.StatusBadRequest,
+var ErrPollListInvalidPage = &echo.HTTPError{
+	Code:     http.StatusBadRequest,
+	Message:  "invalid page specified",
+	Internal: nil,
 }
-var ErrPollListNoData = &UserVisibleError{
-	Err:    model.ErrPollListNoPolls,
-	Status: http.StatusNotFound,
-}
-var handledPollListErrors = []*UserVisibleError{
-	ErrPollListInvalidPage,
-	ErrPollListNoData,
+var ErrPollListNoData = &echo.HTTPError{
+	Message:  "poll list data for a given page does not exist",
+	Code:     http.StatusNotFound,
+	Internal: nil,
 }
 
-var ErrPollListJSONDecode = &UserVisibleError{
-	Err:    errors.New("failed to decode poll list json body"),
-	Status: http.StatusBadRequest,
+var ErrPollListJSONDecode = &echo.HTTPError{
+	Message:  "failed to decode poll list json body",
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
 
-var ErrPollListModel = errors.New("model failed to get poll list")
+var ErrPollListModel = &echo.HTTPError{
+	Message:  "internal server error",
+	Code:     http.StatusInternalServerError,
+	Internal: nil,
+}
 
-func (mapper *PollListSchemaMap) ErrorHandler(err error) error {
-	for _, targetError := range handledPollListErrors {
-		if errors.Is(err, targetError.Err) {
-			return targetError
-		}
+func (mapper *PollListSchemaMap) ErrorHandler(err error) *echo.HTTPError {
+	if errors.Is(err, model.ErrPollListInvalidPage) {
+		return ErrPollListInvalidPage.WithInternal(err)
 	}
 
-	return errors.Join(ErrPollListModel, err)
+	if errors.Is(err, model.ErrPollListNoPolls) {
+		return ErrPollListNoData.WithInternal(err)
+	}
+
+	return ErrPollListModel.WithInternal(err)
 }

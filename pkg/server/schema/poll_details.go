@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
@@ -40,32 +41,40 @@ func (mapper *PollDetailsSchemaMap) Response(input *model.PollDetailsResponse) *
 	}
 }
 
-var ErrPollDetailsEmptyPollID = &UserVisibleError{
-	Err:    model.ErrPollDetailsIDEmpty,
-	Status: http.StatusBadRequest,
+var ErrPollDetailsEmptyPollID = &echo.HTTPError{
+	Message:  model.ErrPollDetailsIDEmpty,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrPollDetailsEmptyUserID = &UserVisibleError{
-	Err:    model.ErrPollDetailsUserIDEmpty,
-	Status: http.StatusBadRequest,
+var ErrPollDetailsEmptyUserID = &echo.HTTPError{
+	Message:  model.ErrPollDetailsUserIDEmpty,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrPollDetailsNotFound = &UserVisibleError{
-	Err:    model.ErrPollDetailsNoPoll,
-	Status: http.StatusNotFound,
-}
-var handledPollDetailsErrors = []*UserVisibleError{
-	ErrPollDetailsEmptyPollID,
-	ErrPollDetailsEmptyUserID,
-	ErrPollDetailsNotFound,
+var ErrPollDetailsNotFound = &echo.HTTPError{
+	Message:  model.ErrPollDetailsNoPoll,
+	Code:     http.StatusNotFound,
+	Internal: nil,
 }
 
-var ErrPollDetailsModel = errors.New("model failed to get poll details")
+var ErrPollDetailsModel = &echo.HTTPError{
+	Message:  "internal server error",
+	Code:     http.StatusInternalServerError,
+	Internal: nil,
+}
 
-func (mapper *PollDetailsSchemaMap) ErrorHandler(err error) error {
-	for _, targetError := range handledPollDetailsErrors {
-		if errors.Is(err, targetError.Err) {
-			return targetError
-		}
+func (mapper *PollDetailsSchemaMap) ErrorHandler(err error) *echo.HTTPError {
+	if errors.Is(err, model.ErrPollDetailsIDEmpty) {
+		return ErrPollDetailsEmptyPollID.WithInternal(err)
 	}
 
-	return errors.Join(ErrPollDetailsModel, err)
+	if errors.Is(err, model.ErrPollDetailsUserIDEmpty) {
+		return ErrPollDetailsEmptyUserID.WithInternal(err)
+	}
+
+	if errors.Is(err, model.ErrPollDetailsNoPoll) {
+		return ErrPollDetailsNotFound.WithInternal(err)
+	}
+
+	return ErrPollDetailsModel.WithInternal(err)
 }

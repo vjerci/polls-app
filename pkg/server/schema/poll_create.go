@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
@@ -33,37 +34,46 @@ func (mapper *PollCreateSchemaMap) Response(input *model.PollCreateResponse) *Po
 	}
 }
 
-var ErrPollCreateNameEmpty = &UserVisibleError{
-	Err:    model.ErrPollCreateNameEmpty,
-	Status: http.StatusBadRequest,
+var ErrPollCreateNameEmpty = &echo.HTTPError{
+	Message:  model.ErrPollCreateNameEmpty,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrPollCreateAnswersLen = &UserVisibleError{
-	Err:    model.ErrPollCreateAnswersLen,
-	Status: http.StatusBadRequest,
+var ErrPollCreateAnswersLen = &echo.HTTPError{
+	Message:  model.ErrPollCreateAnswersLen,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrPollCreateAnswerEmpty = &UserVisibleError{
-	Err:    model.ErrPollCreateAnswerEmpty,
-	Status: http.StatusBadRequest,
-}
-var handledPollCreateErrors = []*UserVisibleError{
-	ErrPollCreateNameEmpty,
-	ErrPollCreateAnswersLen,
-	ErrPollCreateAnswerEmpty,
+var ErrPollCreateAnswerEmpty = &echo.HTTPError{
+	Message:  model.ErrPollCreateAnswerEmpty,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
 
-var ErrPollCreateJSONDecode = &UserVisibleError{
-	Err:    errors.New("failed to decode create poll json body"),
-	Status: http.StatusBadRequest,
+var ErrPollCreateJSONDecode = &echo.HTTPError{
+	Message:  errors.New("failed to decode create poll json body"),
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
 
-var ErrPollCreateModel = errors.New("model failed to create poll")
+var ErrPollCreateModel = &echo.HTTPError{
+	Message:  "internal server error",
+	Code:     http.StatusInternalServerError,
+	Internal: nil,
+}
 
-func (mapper *PollCreateSchemaMap) ErrorHandler(err error) error {
-	for _, targetError := range handledPollCreateErrors {
-		if errors.Is(err, targetError.Err) {
-			return targetError
-		}
+func (mapper *PollCreateSchemaMap) ErrorHandler(err error) *echo.HTTPError {
+	if errors.Is(err, model.ErrPollCreateNameEmpty) {
+		return ErrPollCreateNameEmpty.WithInternal(err)
 	}
 
-	return errors.Join(ErrPollCreateModel, err)
+	if errors.Is(err, model.ErrPollCreateAnswersLen) {
+		return ErrPollCreateAnswersLen.WithInternal(err)
+	}
+
+	if errors.Is(err, model.ErrPollCreateAnswerEmpty) {
+		return ErrPollCreateAnswerEmpty.WithInternal(err)
+	}
+
+	return ErrPollCreateModel.WithInternal(ErrPollCreateModel)
 }

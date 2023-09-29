@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
@@ -31,32 +32,37 @@ func (mapper *LoginSchemaMap) Response(input *model.LoginResponse) *LoginRespons
 	}
 }
 
-var ErrLoginUserDoesNotExist = &UserVisibleError{
-	Err:    model.ErrLoginUserNotFound,
-	Status: http.StatusNotFound,
+var ErrLoginUserDoesNotExist = &echo.HTTPError{
+	Message:  `user with given "user_id" does not exist`,
+	Code:     http.StatusNotFound,
+	Internal: nil,
 }
-var ErrLoginUserIDNotSet = &UserVisibleError{
-	Err:    model.ErrLoginUserIDNotSet,
-	Status: http.StatusBadRequest,
-}
-var handledLoginErrors = []*UserVisibleError{
-	ErrLoginUserDoesNotExist,
-	ErrLoginUserIDNotSet,
+var ErrLoginUserIDNotSet = &echo.HTTPError{
+	Message:  `input field "user_id" not set`,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
 
-var ErrLoginJSONDecode = &UserVisibleError{
-	Err:    errors.New("failed to decode login json body"),
-	Status: http.StatusBadRequest,
+var ErrLoginJSONDecode = &echo.HTTPError{
+	Message:  "failed to decode login json body",
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
 
-var ErrLoginModel = errors.New("model failed to login")
+var ErrLoginModel = &echo.HTTPError{
+	Message:  "internal server error",
+	Code:     http.StatusInternalServerError,
+	Internal: nil,
+}
 
-func (mapper *LoginSchemaMap) ErrorHandler(err error) error {
-	for _, targetError := range handledLoginErrors {
-		if errors.Is(err, targetError.Err) {
-			return targetError
-		}
+func (mapper *LoginSchemaMap) ErrorHandler(err error) *echo.HTTPError {
+	if errors.Is(err, model.ErrLoginUserIDNotSet) {
+		return ErrLoginUserIDNotSet.WithInternal(err)
 	}
 
-	return errors.Join(ErrLoginModel, err)
+	if errors.Is(err, model.ErrLoginUserNotFound) {
+		return ErrLoginUserDoesNotExist.WithInternal(err)
+	}
+
+	return ErrLoginModel.WithInternal(err)
 }

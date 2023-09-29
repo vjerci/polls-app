@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
@@ -23,43 +24,56 @@ func (mapper *PollVoteSchemaMap) Response(input *model.PollVoteResponse) *PollVo
 	}
 }
 
-var ErrPollVoteInvalidVote = &UserVisibleError{
-	Err:    model.ErrPollVoteAnswerNotFound,
-	Status: http.StatusNotFound,
+var ErrPollVoteInvalidVote = &echo.HTTPError{
+	Message:  model.ErrPollVoteAnswerNotFound,
+	Code:     http.StatusNotFound,
+	Internal: nil,
 }
 
-var ErrPollVoteInvalidPollID = &UserVisibleError{
-	Err:    model.ErrPollVotePollIDEmpty,
-	Status: http.StatusBadRequest,
+var ErrPollVoteInvalidPollID = &echo.HTTPError{
+	Message:  model.ErrPollVotePollIDEmpty,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrPollVoteInvalidAnswerID = &UserVisibleError{
-	Err:    model.ErrPollVoteAnswerIDEmpty,
-	Status: http.StatusBadRequest,
+var ErrPollVoteInvalidAnswerID = &echo.HTTPError{
+	Message:  model.ErrPollVoteAnswerIDEmpty,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
-var ErrPollVoteInvalidUserID = &UserVisibleError{
-	Err:    model.ErrPollVoteUserIDEmpty,
-	Status: http.StatusBadRequest,
-}
-var handledPollVoteErrors = []*UserVisibleError{
-	ErrPollVoteInvalidVote,
-	ErrPollVoteInvalidPollID,
-	ErrPollVoteInvalidAnswerID,
-	ErrPollVoteInvalidUserID,
+var ErrPollVoteInvalidUserID = &echo.HTTPError{
+	Message:  model.ErrPollVoteUserIDEmpty,
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
 
-var ErrPollVoteJSONDecode = &UserVisibleError{
-	Err:    errors.New("failed to decode poll vote json body"),
-	Status: http.StatusBadRequest,
+var ErrPollVoteJSONDecode = &echo.HTTPError{
+	Message:  errors.New("failed to decode poll vote json body"),
+	Code:     http.StatusBadRequest,
+	Internal: nil,
 }
 
-var ErrPollVoteModel = errors.New("model poll vote failed to cast vote")
+var ErrPollVoteModel = &echo.HTTPError{
+	Message:  errors.New("internal server error"),
+	Code:     http.StatusInternalServerError,
+	Internal: nil,
+}
 
-func (mapper *PollVoteSchemaMap) ErrorHandler(err error) error {
-	for _, targetError := range handledPollVoteErrors {
-		if errors.Is(err, targetError.Err) {
-			return targetError
-		}
+func (mapper *PollVoteSchemaMap) ErrorHandler(err error) *echo.HTTPError {
+	if errors.Is(err, model.ErrPollVoteAnswerNotFound) {
+		return ErrPollVoteInvalidVote.WithInternal(err)
 	}
 
-	return errors.Join(ErrPollVoteModel, err)
+	if errors.Is(err, model.ErrPollVotePollIDEmpty) {
+		return ErrPollVoteInvalidPollID.WithInternal(err)
+	}
+
+	if errors.Is(err, model.ErrPollVoteAnswerIDEmpty) {
+		return ErrPollVoteInvalidAnswerID.WithInternal(err)
+	}
+
+	if errors.Is(err, model.ErrPollVoteUserIDEmpty) {
+		return ErrPollVoteInvalidUserID.WithInternal(err)
+	}
+
+	return ErrPollVoteModel.SetInternal(err)
 }

@@ -1,3 +1,7 @@
+run:
+	direnv allow
+	docker compose up --build
+
 test:
 	go test ./...
 

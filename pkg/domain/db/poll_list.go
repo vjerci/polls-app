@@ -35,3 +35,20 @@ func (client *DB) GetPollList(page int) ([]PollListData, error) {
 
 	return data, nil
 }
+
+var ErrPollListNextPage = errors.New("error querying poll table for its count")
+
+func (client *DB) HasNextPage(page int) (bool, error) {
+	var pollCount int
+
+	err := client.Pool.QueryRow(context.Background(), "SELECT count(id) FROM polls").Scan(&pollCount)
+	if err != nil {
+		return false, errors.Join(ErrPollListNextPage, err)
+	}
+
+	if (page+1)*PollListLimit >= pollCount {
+		return false, nil
+	}
+
+	return true, nil
+}

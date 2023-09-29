@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
@@ -14,7 +15,7 @@ func TestRegisterErrors(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		ExpectedError error
+		ExpectedError *echo.HTTPError
 		InputError    error
 	}{
 
@@ -41,9 +42,8 @@ func TestRegisterErrors(t *testing.T) {
 
 		err := schemaMap.ErrorHandler(test.InputError)
 
-		if !errors.Is(err, test.ExpectedError) {
-			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
-		}
+		assert.EqualValues(t, test.ExpectedError.Code, err.Code, "expected http status code to match")
+		assert.EqualValues(t, test.ExpectedError.Message, err.Message, "expected error message to match")
 	}
 }
 

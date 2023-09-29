@@ -30,7 +30,7 @@ func TestPollDetailsErrors(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		ExpectedError error
+		ExpectedError *echo.HTTPError
 		Input         func(echoContext echo.Context) echo.Context
 		Model         *MockPollDetailsModel
 	}{
@@ -78,9 +78,14 @@ func TestPollDetailsErrors(t *testing.T) {
 
 		err := apiClient.PollDetails(echoContext)
 
-		if !errors.Is(err, test.ExpectedError) {
-			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
+		//nolint:errorlint
+		errHTTP, ok := err.(*echo.HTTPError)
+		if !ok {
+			t.Fatal("expected http error")
 		}
+
+		assert.EqualValues(t, test.ExpectedError.Code, errHTTP.Code, "expected http status code to match")
+		assert.EqualValues(t, test.ExpectedError.Message, errHTTP.Message, "expected error message to match")
 	}
 }
 

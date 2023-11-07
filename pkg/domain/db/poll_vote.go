@@ -11,12 +11,14 @@ var ErrExistsPollAnswerNotFound = errors.New("poll answer with given answer id a
 var ErrExistsPollAnswerQuery = errors.New("failed to query answers")
 
 func (client *DB) ExistsPollAnswer(pollID, answerID string) error {
-	_, err := client.Pool.Query(
+	rows, err := client.Pool.Query(
 		context.Background(),
 		"SELECT name FROM answers WHERE id=$1 AND poll_id=$2;",
 		answerID,
 		pollID,
 	)
+
+	rows.Close()
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

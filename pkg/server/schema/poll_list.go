@@ -8,16 +8,6 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
 )
 
-type PollListRequest struct {
-	Page int `json:"page"`
-}
-
-func (req *PollListRequest) ToModel() *model.PollListRequest {
-	return &model.PollListRequest{
-		Page: req.Page,
-	}
-}
-
 type PollListSchemaMap struct{}
 
 type PollListResponse struct {
@@ -56,15 +46,15 @@ var ErrPollListNoData = &echo.HTTPError{
 	Internal: nil,
 }
 
-var ErrPollListJSONDecode = &echo.HTTPError{
-	Message:  "failed to decode poll list json body",
-	Code:     http.StatusBadRequest,
-	Internal: nil,
-}
-
 var ErrPollListModel = &echo.HTTPError{
 	Message:  "internal server error",
 	Code:     http.StatusInternalServerError,
+	Internal: nil,
+}
+
+var ErrPollListPageNotInt = &echo.HTTPError{
+	Message:  "specified page is not an integer",
+	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 

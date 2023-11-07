@@ -28,17 +28,17 @@ func (mapper *RegisterSchemaMap) Response(input auth.AccessToken) string {
 }
 
 var ErrRegisterUserIDNotSet = &echo.HTTPError{
-	Message:  model.ErrRegisterUserIDNotSet,
+	Message:  `field "user_id" is not set`,
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrRegisterNameNotSet = &echo.HTTPError{
-	Message:  model.ErrRegisterNameNotSet,
+	Message:  `field "name" is not set`,
 	Code:     http.StatusBadRequest,
 	Internal: nil,
 }
 var ErrRegisterUserDuplicate = &echo.HTTPError{
-	Message:  model.ErrRegisterDuplicate,
+	Message:  `user with given "user_id" already registered`,
 	Code:     http.StatusConflict,
 	Internal: nil,
 }

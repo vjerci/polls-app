@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
 )
@@ -46,7 +47,12 @@ func (model *PollCreateModel) Create(data *PollCreateRequest) (*PollCreateRespon
 		}
 	}
 
-	dbPolls, err := model.PollCreateDB.CreatePoll(data.Name, data.Answers)
+	pollName := strings.Trim(data.Name, " ")
+	if !strings.HasSuffix(pollName, "?") {
+		pollName += "?"
+	}
+
+	dbPolls, err := model.PollCreateDB.CreatePoll(pollName, data.Answers)
 	if err != nil {
 		return nil, errors.Join(ErrPollCreateDB, err)
 	}

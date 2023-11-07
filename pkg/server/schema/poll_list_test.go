@@ -41,18 +41,6 @@ func TestPollListErrors(t *testing.T) {
 	}
 }
 
-func TestPollListInputConversion(t *testing.T) {
-	t.Parallel()
-
-	input := schema.PollListRequest{
-		Page: 1,
-	}
-
-	converted := input.ToModel()
-
-	assert.EqualValues(t, input.Page, converted.Page, "expected page values to be equal")
-}
-
 func TestPollListResponseConversion(t *testing.T) {
 	t.Parallel()
 

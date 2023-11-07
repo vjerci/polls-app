@@ -1,6 +1,8 @@
 package router
 
 import (
+	"log"
+
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
@@ -29,10 +31,12 @@ func (handler *Router) Build() *echo.Echo {
 	router.Use(middleware.Gzip())
 
 	if config.Get().Debug {
+		log.Printf("running server with cors enabled")
+
 		//nolint:exhaustivestruct
 		router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins: []string{"*"},
-			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAcceptEncoding},
+			AllowOrigins: []string{"*", "http://localhost:3000/"},
+			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAcceptEncoding, echo.HeaderAuthorization},
 		}))
 	}
 

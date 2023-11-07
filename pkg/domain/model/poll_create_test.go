@@ -119,7 +119,7 @@ func TestPollCreateSuccess(t *testing.T) {
 		t.Fatalf(`expected no err but got "%s" instead`, err)
 	}
 
-	assert.EqualValues(t, input.Name, pollCreateDBMock.InputPollName,
+	assert.EqualValues(t, input.Name+"?", pollCreateDBMock.InputPollName,
 		"expected input poll name to be passed to pollCreateDB")
 	assert.EqualValues(t, input.Answers, pollCreateDBMock.InputPollAnswers,
 		"expected input poll answers to be passed to pollCreateDB")
@@ -127,6 +127,6 @@ func TestPollCreateSuccess(t *testing.T) {
 	assert.EqualValues(t, pollCreateDBMock.Response.ID, resp.PollID, "expected to return same poll id that db returned")
 
 	for i, v := range pollCreateDBMock.Response.Answers {
-		assert.EqualValues(t, resp.AnswersIDS[i], v.ID, "expected returned same answer id that db returned")
+		assert.EqualValues(t, resp.AnswersIDS[i], v.ID, "expected to return same answer ids that db returned")
 	}
 }

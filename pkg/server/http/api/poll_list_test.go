@@ -31,16 +31,16 @@ func TestPollListErrors(t *testing.T) {
 
 	testCases := []struct {
 		ExpectedError *echo.HTTPError
-		Input         string
+		URL           string
 		Model         *MockPollsListModel
 	}{
 		{
-			ExpectedError: schema.ErrPollListJSONDecode,
-			Input:         "[{]}",
+			ExpectedError: schema.ErrPollListPageNotInt,
+			URL:           "http://localhost/poll_list?page=dsadsa",
 		},
 		{
 			ExpectedError: schema.ErrPollListModel,
-			Input:         `{}`,
+			URL:           "http://localhost/poll_list?page=1",
 			Model: &MockPollsListModel{
 				ResponseError: errors.New("test error"),
 			},
@@ -48,7 +48,7 @@ func TestPollListErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		req := httptest.NewRequest(echo.GET, "http://localhost/poll_list", strings.NewReader(test.Input))
+		req := httptest.NewRequest(echo.GET, test.URL, nil)
 		rec := httptest.NewRecorder()
 
 		e := echo.New()

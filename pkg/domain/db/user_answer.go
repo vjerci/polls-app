@@ -44,9 +44,9 @@ func (client *DB) UpsertUserAnswer(pollID, answerID, userID string) (modified bo
 	}
 
 	if oldAnswerID != "" {
-		_, err := client.Pool.Query(
+		rows, err := client.Pool.Query(
 			context.Background(),
-			"UPDATE user_answers SET answer_id=$1 WHERE answer_id=$1 AND user_id=$2;",
+			"UPDATE user_answers SET answer_id=$1 WHERE answer_id=$2 AND user_id=$3;",
 			answerID,
 			oldAnswerID,
 			userID,
@@ -55,6 +55,8 @@ func (client *DB) UpsertUserAnswer(pollID, answerID, userID string) (modified bo
 		if err != nil {
 			return false, errors.Join(ErrUpsertUserAnswerUpdate, err)
 		}
+
+		rows.Close()
 
 		return true, nil
 	}

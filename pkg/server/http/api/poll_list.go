@@ -1,8 +1,8 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
+	"strconv"
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
@@ -19,14 +19,22 @@ type PollListSchemaMap interface {
 }
 
 func (client *API) PollList(echoContext echo.Context) error {
-	var data schema.PollListRequest
+	pageStr := echoContext.QueryParam("page")
 
-	err := json.NewDecoder(echoContext.Request().Body).Decode(&data)
-	if err != nil {
-		return schema.ErrPollListJSONDecode.WithInternal(err)
+	page := 0
+
+	if pageStr != "" {
+		var err error
+
+		page, err = strconv.Atoi(pageStr)
+		if err != nil {
+			return schema.ErrPollListPageNotInt
+		}
 	}
 
-	resp, err := client.models.PollList.Get(data.ToModel())
+	resp, err := client.models.PollList.Get(&model.PollListRequest{
+		Page: page,
+	})
 	if err != nil {
 		return client.schemas.PollList.ErrorHandler(err)
 	}

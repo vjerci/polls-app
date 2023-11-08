@@ -53,7 +53,7 @@ func (handler *Router) Build() *echo.Echo {
 	auth := endpoint.Group("/auth")
 	auth.PUT("/register", handler.Register)
 	auth.POST("/login", handler.Login)
-	auth.POST("/google/login", handler.Login)
+	auth.POST("/google/login", handler.GoogleLogin)
 
 	poll := endpoint.Group("/poll", handler.MiddlewareWithAuth)
 	poll.GET("", handler.PollList)

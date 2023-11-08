@@ -22,36 +22,36 @@ type UserDetails struct {
 	Name  string
 }
 
-var ErrLoginGoogleValidation = errors.New("failed to validate google token")
-var ErrLoginGoogleEmailNotSet = errors.New("didn't get an email response from google")
-var ErrLoginGooglEmailNotString = errors.New("email response from google is not a string")
-var ErrLoginGoogleUserNameNotSet = errors.New("didn't get an name response from google")
-var ErrLoginGooglUserNameNotString = errors.New("name response from google is not a string")
+var ErrGoogleLoginValidation = errors.New("failed to validate google token")
+var ErrGoogleLoginEmailNotSet = errors.New("didn't get an email response from google")
+var ErrGoogleLoginEmailNotString = errors.New("email response from google is not a string")
+var ErrGoogleLoginUserNameNotSet = errors.New("didn't get an name response from google")
+var ErrGoogleLoginUserNameNotString = errors.New("name response from google is not a string")
 
 func (client *Client) GetUserDetails(token string) (UserDetails, error) {
 	googleToken, err := idtoken.Validate(context.Background(), token, client.ClientID)
 	if err != nil {
-		return UserDetails{}, errors.Join(ErrLoginGoogleValidation, err)
+		return UserDetails{}, errors.Join(ErrGoogleLoginValidation, err)
 	}
 
 	userEmailInterface, emailExists := googleToken.Claims["email"]
 	if !emailExists {
-		return UserDetails{}, ErrLoginGoogleEmailNotSet
+		return UserDetails{}, ErrGoogleLoginEmailNotSet
 	}
 
 	userEmail, isString := userEmailInterface.(string)
 	if !isString {
-		return UserDetails{}, ErrLoginGooglEmailNotString
+		return UserDetails{}, ErrGoogleLoginEmailNotString
 	}
 
 	userNameInterface, nameExists := googleToken.Claims["name"]
 	if !nameExists {
-		return UserDetails{}, ErrLoginGoogleEmailNotSet
+		return UserDetails{}, ErrGoogleLoginUserNameNotSet
 	}
 
 	userName, isString := userNameInterface.(string)
 	if !isString {
-		return UserDetails{}, ErrLoginGooglUserNameNotString
+		return UserDetails{}, ErrGoogleLoginUserNameNotString
 	}
 
 	return UserDetails{

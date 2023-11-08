@@ -7,11 +7,11 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/googleauth"
 )
 
-type LoginGoogleRequest struct {
+type GoogleLoginRequest struct {
 	Token string
 }
 
-type LoginGoogleResponse struct {
+type GoogleLoginResponse struct {
 	Token string
 	Name  string
 }
@@ -20,39 +20,39 @@ type GoogleAuthRepository interface {
 	GetUserDetails(token string) (googleauth.UserDetails, error)
 }
 
-type LoginGoogleModel struct {
+type GoogleLoginModel struct {
 	GoogleAuthDB GoogleAuthRepository
 	AuthDB       AuthRepository
 	UserDB       UserRepository
 	RegisterDB   RegisterRepository
 }
 
-var ErrLoginGoogleTokenNotSet = errors.New("google token not set")
-var ErrLoginGoogleAuth = errors.New("failed to authenticate with google")
-var ErrLoginGoogleGetUser = errors.New("failed to get user")
-var ErrLoginGoogleCreateUser = errors.New("failed to create user")
+var ErrGoogleLoginTokenNotSet = errors.New("google token not set")
+var ErrGoogleLoginAuth = errors.New("failed to authenticate with google")
+var ErrGoogleLoginGetUser = errors.New("failed to get user")
+var ErrGoogleLoginCreateUser = errors.New("failed to create user")
 
-func (model *LoginGoogleModel) Do(data *LoginGoogleRequest) (resp *LoginGoogleResponse, err error) {
+func (model *GoogleLoginModel) Do(data *GoogleLoginRequest) (resp *GoogleLoginResponse, err error) {
 	if data.Token == "" {
-		return nil, ErrLoginGoogleTokenNotSet
+		return nil, ErrGoogleLoginTokenNotSet
 	}
 
 	userDetails, err := model.GoogleAuthDB.GetUserDetails(data.Token)
 	if err != nil {
-		return nil, errors.Join(ErrLoginGoogleAuth, err)
+		return nil, errors.Join(ErrGoogleLoginAuth, err)
 	}
 
 	// try to get user
 	name, err := model.UserDB.GetUser(userDetails.Email)
 	if err != nil && !errors.Is(err, db.ErrGetUserNoRows) {
-		return nil, errors.Join(ErrLoginGoogleGetUser, err)
+		return nil, errors.Join(ErrGoogleLoginGetUser, err)
 	}
 
 	// if user doesn't exist create it
 	if errors.Is(err, db.ErrGetUserNoRows) {
 		err := model.RegisterDB.CreateUser(userDetails.Email, userDetails.Name)
 		if err != nil {
-			return nil, errors.Join(ErrLoginGoogleCreateUser, err)
+			return nil, errors.Join(ErrGoogleLoginCreateUser, err)
 		}
 	}
 
@@ -61,7 +61,7 @@ func (model *LoginGoogleModel) Do(data *LoginGoogleRequest) (resp *LoginGoogleRe
 		return nil, errors.Join(ErrLoginCreateToken, err)
 	}
 
-	return &LoginGoogleResponse{
+	return &GoogleLoginResponse{
 		Token: string(token),
 		Name:  name,
 	}, nil

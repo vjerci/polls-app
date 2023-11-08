@@ -44,6 +44,8 @@ func New(settings config.Config) (*echo.Echo, error) {
 	routeHandler := router.Router{
 		Register:    apiClient.Register,
 		Login:       apiClient.Login,
+		GoogleLogin: apiClient.GoogleLogin,
+
 		PollList:    apiClient.PollList,
 		PollCreate:  apiClient.PollCreate,
 		PollDetails: apiClient.PollDetails,
@@ -66,7 +68,7 @@ func newModel(dbClient *db.DB, authClient authmodel.AuthRepository, googleAuthCl
 			RegisterDB: dbClient,
 			AuthDB:     authClient,
 		},
-		LoginGoogle: &authmodel.LoginGoogleModel{
+		GoogleLogin: &authmodel.GoogleLoginModel{
 			AuthDB:       authClient,
 			GoogleAuthDB: googleAuthClient,
 			UserDB:       dbClient,
@@ -92,7 +94,7 @@ func newSchemaMap() *api.SchemaMap {
 	return &api.SchemaMap{
 		Login:       &schema.LoginSchemaMap{},
 		Register:    &schema.RegisterSchemaMap{},
-		LoginGoogle: &schema.LoginGoogleSchemaMap{},
+		GoogleLogin: &schema.GoogleLoginSchemaMap{},
 		PollList:    &schema.PollListSchemaMap{},
 		PollDetails: &schema.PollDetailsSchemaMap{},
 		PollCreate:  &schema.PollCreateSchemaMap{},

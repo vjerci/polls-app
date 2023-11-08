@@ -2,56 +2,66 @@ package config
 
 import (
 	"errors"
-	"os"
+
+	"github.com/spf13/viper"
 )
+
+var ErrReadConfig = errors.New("failed to read config")
+var ErrUnmarshalConfig = errors.New("failed to unmarshal config")
 
 var ErrPostgresURLEmpty = errors.New("postgres url is not specified")
 var ErrJWTKeyEmpty = errors.New("jwt private key is not specified")
 var ErrHTTPPortEmpty = errors.New("http port is not specified")
 var ErrGRPCPortEmpty = errors.New("grpc port is not specified")
+var ErrGoogleClientIDEmpty = errors.New("google client id empty")
 
 var config Config
 
 type Config struct {
-	HTTPPort      string
-	GRPCPort      string
-	PostgresURL   string
-	JWTSigningKey string
-	Debug         bool
+	PostgresURL string `mapstructure:"POSTGRES_URL"`
+
+	HTTPPort string `mapstructure:"HTTP_PORT"`
+	GRPCPort string `mapstructure:"GRPC_PORT"`
+
+	JWTSigningKey  string `mapstructure:"JWT_KEY"`
+	GoogleClientID string `mapstructure:"GOOGLE_CLIENT_ID"`
+
+	Debug bool `mapstructure:"DEBUG"`
 }
 
 func Setup() error {
-	postgres := os.Getenv("POSTGRES_URL")
-	if postgres == "" {
+	viper.AddConfigPath(".")
+	viper.SetConfigName("config")
+	viper.SetConfigType("yml")
+
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		return errors.Join(ErrReadConfig, err)
+	}
+
+	if err := viper.Unmarshal(&config); err != nil {
+		return errors.Join(ErrUnmarshalConfig, err)
+	}
+
+	if config.PostgresURL == "" {
 		return ErrPostgresURLEmpty
 	}
 
-	debug := false
-	if os.Getenv("DEBUG") == "true" {
-		debug = true
-	}
-
-	jwt := os.Getenv("JWT_KEY")
-	if jwt == "" {
+	if config.JWTSigningKey == "" {
 		return ErrJWTKeyEmpty
 	}
 
-	httpPort := os.Getenv("HTTP_PORT")
-	if httpPort == "" {
+	if config.HTTPPort == "" {
 		return ErrHTTPPortEmpty
 	}
 
-	grpcPort := os.Getenv("GRPC_PORT")
-	if grpcPort == "" {
+	if config.GRPCPort == "" {
 		return ErrGRPCPortEmpty
 	}
 
-	config = Config{
-		PostgresURL:   postgres,
-		JWTSigningKey: jwt,
-		Debug:         debug,
-		HTTPPort:      ":" + httpPort,
-		GRPCPort:      grpcPort,
+	if config.GoogleClientID == "" {
+		return ErrGoogleClientIDEmpty
 	}
 
 	return nil

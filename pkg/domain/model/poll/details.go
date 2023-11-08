@@ -1,4 +1,4 @@
-package model
+package poll
 
 import (
 	"errors"
@@ -7,64 +7,64 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
 )
 
-type PollDetailsRequest struct {
-	PollID string
+type DetailsRequest struct {
+	ID     string
 	UserID string
 }
 
-type PollDetailsResponse struct {
+type DetailsResponse struct {
 	ID         string
 	Name       string
 	UserAnswer string
-	Answers    []PollDetailsAnswer
+	Answers    []DetailsAnswer
 }
 
-type PollDetailsAnswer struct {
+type DetailsAnswer struct {
 	Name       string
 	ID         string
 	VotesCount int
 }
 
-type PollDetailsRepository interface {
+type DetailsRepository interface {
 	GetPollDetails(pollID string) (*db.PollDetailsResponse, error)
 	GetPollDetailsAnswers(pollID string) ([]db.PollDetailsAnswer, error)
 	GetUserAnswer(pollID, userID string) (answerID string, err error)
 }
 
-type PollDetailsModel struct {
-	PollDetailsDB PollDetailsRepository
+type DetailsModel struct {
+	DetailsDB DetailsRepository
 }
 
-var ErrPollDetailsIDEmpty = errors.New("poll details failure, PollID cannot be empty")
-var ErrPollDetailsUserIDEmpty = errors.New("poll details failure, UserID cannot be empty")
+var ErrDetailsIDEmpty = errors.New("poll details failure, PollID cannot be empty")
+var ErrDetailsUserIDEmpty = errors.New("poll details failure, UserID cannot be empty")
 
-var ErrPollDetailsNoPoll = errors.New("couldn't find a poll with a given id")
+var ErrDetailsNoPoll = errors.New("couldn't find a poll with a given id")
 
-var ErrPollDetailsQueryInfo = errors.New("failed to get poll details info")
-var ErrPollDetailsAnswers = errors.New("failed to get answers")
-var ErrPollDetailsUserAnswer = errors.New("failed to get user answer")
+var ErrDetailsQueryInfo = errors.New("failed to get poll details info")
+var ErrDetailsAnswers = errors.New("failed to get answers")
+var ErrDetailsUserAnswer = errors.New("failed to get user answer")
 
-func (model *PollDetailsModel) Get(data *PollDetailsRequest) (*PollDetailsResponse, error) {
-	if data.PollID == "" {
-		return nil, ErrPollDetailsIDEmpty
+func (model *DetailsModel) Get(data *DetailsRequest) (*DetailsResponse, error) {
+	if data.ID == "" {
+		return nil, ErrDetailsIDEmpty
 	}
 
 	if data.UserID == "" {
-		return nil, ErrPollDetailsUserIDEmpty
+		return nil, ErrDetailsUserIDEmpty
 	}
 
-	fetcher := newPollDetailsFetcher(data.UserID, data.PollID, model.PollDetailsDB)
+	fetcher := newDetailsFetcher(data.UserID, data.ID, model.DetailsDB)
 
 	return fetcher.Fetch()
 }
 
-type pollDetailsFetcher struct {
+type detailsFetcher struct {
 	userID string
 	pollID string
 
-	db PollDetailsRepository
+	db DetailsRepository
 
-	response *PollDetailsResponse
+	response *DetailsResponse
 
 	waitGroup sync.WaitGroup
 
@@ -73,14 +73,14 @@ type pollDetailsFetcher struct {
 	errUserAnswerQuery error
 }
 
-func newPollDetailsFetcher(userID string, pollID string, db PollDetailsRepository) *pollDetailsFetcher {
-	return &pollDetailsFetcher{
+func newDetailsFetcher(userID string, pollID string, db DetailsRepository) *detailsFetcher {
+	return &detailsFetcher{
 		userID: userID,
 		pollID: pollID,
 
 		db: db,
 
-		response: &PollDetailsResponse{
+		response: &DetailsResponse{
 			Name:       "",
 			UserAnswer: "",
 			Answers:    nil,
@@ -95,7 +95,7 @@ func newPollDetailsFetcher(userID string, pollID string, db PollDetailsRepositor
 	}
 }
 
-func (fetcher *pollDetailsFetcher) Fetch() (*PollDetailsResponse, error) {
+func (fetcher *detailsFetcher) Fetch() (*DetailsResponse, error) {
 	var fetcherConcurrentRequests = 3
 
 	fetcher.waitGroup.Add(fetcherConcurrentRequests)
@@ -113,7 +113,7 @@ func (fetcher *pollDetailsFetcher) Fetch() (*PollDetailsResponse, error) {
 	return fetcher.response, nil
 }
 
-func (fetcher *pollDetailsFetcher) getPollDetails() {
+func (fetcher *detailsFetcher) getPollDetails() {
 	pollInfo, err := fetcher.db.GetPollDetails(fetcher.pollID)
 	if err != nil {
 		fetcher.errDetailsQuery = err
@@ -128,7 +128,7 @@ func (fetcher *pollDetailsFetcher) getPollDetails() {
 	fetcher.waitGroup.Done()
 }
 
-func (fetcher *pollDetailsFetcher) getAnswers() {
+func (fetcher *detailsFetcher) getAnswers() {
 	answers, err := fetcher.db.GetPollDetailsAnswers(fetcher.pollID)
 	if err != nil {
 		fetcher.errAnswersQuery = err
@@ -138,9 +138,9 @@ func (fetcher *pollDetailsFetcher) getAnswers() {
 		return
 	}
 
-	fetcher.response.Answers = make([]PollDetailsAnswer, len(answers))
+	fetcher.response.Answers = make([]DetailsAnswer, len(answers))
 	for i, answer := range answers {
-		fetcher.response.Answers[i] = PollDetailsAnswer{
+		fetcher.response.Answers[i] = DetailsAnswer{
 			Name:       answer.Name,
 			ID:         answer.ID,
 			VotesCount: answer.Count,
@@ -150,7 +150,7 @@ func (fetcher *pollDetailsFetcher) getAnswers() {
 	fetcher.waitGroup.Done()
 }
 
-func (fetcher *pollDetailsFetcher) getUserAnswer() {
+func (fetcher *detailsFetcher) getUserAnswer() {
 	userAnswer, err := fetcher.db.GetUserAnswer(fetcher.pollID, fetcher.userID)
 	if err != nil {
 		fetcher.errUserAnswerQuery = err
@@ -165,25 +165,25 @@ func (fetcher *pollDetailsFetcher) getUserAnswer() {
 	fetcher.waitGroup.Done()
 }
 
-func (fetcher *pollDetailsFetcher) handleErrors() error {
+func (fetcher *detailsFetcher) handleErrors() error {
 	details := fetcher.errDetailsQuery
 	if details != nil {
 		if errors.Is(details, db.ErrPollDetailsNotFound) {
-			return errors.Join(ErrPollDetailsNoPoll, details)
+			return errors.Join(ErrDetailsNoPoll, details)
 		}
 
-		return errors.Join(ErrPollDetailsQueryInfo, details)
+		return errors.Join(ErrDetailsQueryInfo, details)
 	}
 
 	answers := fetcher.errAnswersQuery
 	if answers != nil {
-		return errors.Join(ErrPollDetailsAnswers, answers)
+		return errors.Join(ErrDetailsAnswers, answers)
 	}
 
 	userAnswer := fetcher.errUserAnswerQuery
 	if userAnswer != nil {
 		if !errors.Is(userAnswer, db.ErrUserAnswerNotFound) {
-			return errors.Join(ErrPollDetailsUserAnswer, userAnswer)
+			return errors.Join(ErrDetailsUserAnswer, userAnswer)
 		}
 	}
 

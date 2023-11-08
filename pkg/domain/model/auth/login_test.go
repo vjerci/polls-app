@@ -1,4 +1,4 @@
-package model_test
+package auth_test
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	modelauth "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 )
 
@@ -39,21 +39,21 @@ func TestLoginErrors(t *testing.T) {
 
 	testCases := []struct {
 		ExpectedError error
-		Input         *model.LoginRequest
+		Input         *modelauth.LoginRequest
 		UserDBMock    *MockUserDB
 		AuthDBMock    *MockAuthDB
 	}{
 		{
-			ExpectedError: model.ErrLoginUserIDNotSet,
-			Input: &model.LoginRequest{
+			ExpectedError: modelauth.ErrLoginUserIDNotSet,
+			Input: &modelauth.LoginRequest{
 				UserID: "",
 			},
 			UserDBMock: &MockUserDB{},
 			AuthDBMock: &MockAuthDB{},
 		},
 		{
-			ExpectedError: model.ErrLoginUserNotFound,
-			Input: &model.LoginRequest{
+			ExpectedError: modelauth.ErrLoginUserNotFound,
+			Input: &modelauth.LoginRequest{
 				UserID: "userID",
 			},
 			UserDBMock: &MockUserDB{
@@ -63,8 +63,8 @@ func TestLoginErrors(t *testing.T) {
 			AuthDBMock: &MockAuthDB{},
 		},
 		{
-			ExpectedError: model.ErrLoginUserDB,
-			Input: &model.LoginRequest{
+			ExpectedError: modelauth.ErrLoginUserDB,
+			Input: &modelauth.LoginRequest{
 				UserID: "userID",
 			},
 			UserDBMock: &MockUserDB{
@@ -74,8 +74,8 @@ func TestLoginErrors(t *testing.T) {
 			AuthDBMock: &MockAuthDB{},
 		},
 		{
-			ExpectedError: model.ErrLoginCreateToken,
-			Input: &model.LoginRequest{
+			ExpectedError: modelauth.ErrLoginCreateToken,
+			Input: &modelauth.LoginRequest{
 				UserID: "userID",
 			},
 			UserDBMock: &MockUserDB{
@@ -89,7 +89,7 @@ func TestLoginErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		loginModel := model.LoginModel{
+		loginModel := modelauth.LoginModel{
 			AuthDB: test.AuthDBMock,
 			UserDB: test.UserDBMock,
 		}
@@ -119,12 +119,12 @@ func TestLoginSuccess(t *testing.T) {
 		ResponseAccessToken: "testToken",
 	}
 
-	loginModel := model.LoginModel{
+	loginModel := modelauth.LoginModel{
 		UserDB: userDBMock,
 		AuthDB: AuthDBMock,
 	}
 
-	input := &model.LoginRequest{
+	input := &modelauth.LoginRequest{
 		UserID: "userID",
 	}
 

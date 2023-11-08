@@ -9,19 +9,19 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	modelauth "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type MockRegisterModel struct {
-	InputData     *model.RegisterRequest
+	InputData     *modelauth.RegisterRequest
 	ResponseData  auth.AccessToken
 	ResponseError error
 }
 
-func (mock *MockRegisterModel) Do(input *model.RegisterRequest) (accessToken auth.AccessToken, err error) {
+func (mock *MockRegisterModel) Do(input *modelauth.RegisterRequest) (accessToken auth.AccessToken, err error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError

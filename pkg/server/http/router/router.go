@@ -9,8 +9,9 @@ import (
 )
 
 type Router struct {
-	Register echo.HandlerFunc
-	Login    echo.HandlerFunc
+	Register    echo.HandlerFunc
+	Login       echo.HandlerFunc
+	GoogleLogin echo.HandlerFunc
 
 	PollList    echo.HandlerFunc
 	PollDetails echo.HandlerFunc
@@ -36,7 +37,12 @@ func (handler *Router) Build() *echo.Echo {
 		//nolint:exhaustivestruct
 		router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: []string{"*", "http://localhost:3000/"},
-			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAcceptEncoding, echo.HeaderAuthorization},
+			AllowHeaders: []string{
+				echo.HeaderOrigin,
+				echo.HeaderContentType,
+				echo.HeaderAcceptEncoding,
+				echo.HeaderAuthorization,
+			},
 		}))
 	}
 
@@ -47,6 +53,7 @@ func (handler *Router) Build() *echo.Echo {
 	auth := endpoint.Group("/auth")
 	auth.PUT("/register", handler.Register)
 	auth.POST("/login", handler.Login)
+	auth.POST("/google/login", handler.Login)
 
 	poll := endpoint.Group("/poll", handler.MiddlewareWithAuth)
 	poll.GET("", handler.PollList)

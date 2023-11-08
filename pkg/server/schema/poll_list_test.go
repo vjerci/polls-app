@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
@@ -19,11 +19,11 @@ func TestPollListErrors(t *testing.T) {
 	}{
 		{
 			ExpectedError: schema.ErrPollListInvalidPage,
-			InputError:    model.ErrPollListInvalidPage,
+			InputError:    poll.ErrListInvalidPage,
 		},
 		{
 			ExpectedError: schema.ErrPollListNoData,
-			InputError:    model.ErrPollListNoPolls,
+			InputError:    poll.ErrListNoPolls,
 		},
 		{
 			ExpectedError: schema.ErrPollListModel,
@@ -44,8 +44,8 @@ func TestPollListErrors(t *testing.T) {
 func TestPollListResponseConversion(t *testing.T) {
 	t.Parallel()
 
-	output := model.PollListResponse{
-		Polls: []model.GeneralPollInfo{
+	output := poll.ListResponse{
+		Polls: []poll.GeneralInfo{
 			{
 				Name: "test name 1",
 				ID:   "test id 1",

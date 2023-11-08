@@ -8,7 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api/middleware"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
@@ -92,7 +92,7 @@ func TestAuth(t *testing.T) {
 				Response: "testUserID1",
 			},
 			UserMock: &MockUserRepo{
-				ResponseErr: model.ErrGetUserUserNotFound,
+				ResponseErr: authmodel.ErrGetUserUserNotFound,
 			},
 
 			ExpectedError: schema.ErrAuthUserDoesNotExist,

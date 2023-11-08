@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
@@ -19,19 +19,19 @@ func TestPollVoteErrors(t *testing.T) {
 	}{
 		{
 			ExpectedError: schema.ErrPollVoteInvalidVote,
-			InputError:    model.ErrPollVoteAnswerNotFound,
+			InputError:    poll.ErrVoteAnswerNotFound,
 		},
 		{
 			ExpectedError: schema.ErrPollVoteInvalidPollID,
-			InputError:    model.ErrPollVotePollIDEmpty,
+			InputError:    poll.ErrVotePollIDEmpty,
 		},
 		{
 			ExpectedError: schema.ErrPollVoteInvalidAnswerID,
-			InputError:    model.ErrPollVoteAnswerIDEmpty,
+			InputError:    poll.ErrVoteAnswerIDEmpty,
 		},
 		{
 			ExpectedError: schema.ErrPollVoteInvalidUserID,
-			InputError:    model.ErrPollVoteUserIDEmpty,
+			InputError:    poll.ErrVoteUserIDEmpty,
 		},
 		{
 			ExpectedError: schema.ErrPollVoteModel,
@@ -52,7 +52,7 @@ func TestPollVoteErrors(t *testing.T) {
 func TestPollVoteResponseConversion(t *testing.T) {
 	t.Parallel()
 
-	output := model.PollVoteResponse{
+	output := poll.VoteResponse{
 		ModifiedAnswer: true,
 	}
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
@@ -19,15 +19,15 @@ func TestPollDetailsErrors(t *testing.T) {
 	}{
 		{
 			ExpectedError: schema.ErrPollDetailsEmptyPollID,
-			InputError:    model.ErrPollDetailsIDEmpty,
+			InputError:    poll.ErrDetailsIDEmpty,
 		},
 		{
 			ExpectedError: schema.ErrPollDetailsEmptyUserID,
-			InputError:    model.ErrPollDetailsUserIDEmpty,
+			InputError:    poll.ErrDetailsUserIDEmpty,
 		},
 		{
 			ExpectedError: schema.ErrPollDetailsNotFound,
-			InputError:    model.ErrPollDetailsNoPoll,
+			InputError:    poll.ErrDetailsNoPoll,
 		},
 		{
 			ExpectedError: schema.ErrPollDetailsModel,
@@ -48,11 +48,11 @@ func TestPollDetailsErrors(t *testing.T) {
 func TestPollDetailsResponseConversion(t *testing.T) {
 	t.Parallel()
 
-	output := model.PollDetailsResponse{
+	output := poll.DetailsResponse{
 		ID:         "testID",
 		Name:       "testName",
 		UserAnswer: "testUserAnswer",
-		Answers: []model.PollDetailsAnswer{
+		Answers: []poll.DetailsAnswer{
 			{
 				Name:       "answerName1",
 				ID:         "answerID1",

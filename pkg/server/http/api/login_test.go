@@ -9,18 +9,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type MockLoginModel struct {
-	InputData     *model.LoginRequest
-	ResponseData  *model.LoginResponse
+	InputData     *auth.LoginRequest
+	ResponseData  *auth.LoginResponse
 	ResponseError error
 }
 
-func (mock *MockLoginModel) Do(input *model.LoginRequest) (*model.LoginResponse, error) {
+func (mock *MockLoginModel) Do(input *auth.LoginRequest) (*auth.LoginResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -78,7 +78,7 @@ func TestLoginSuccessful(t *testing.T) {
 
 	input := `{"user_id":"userID"}`
 	loginModelMock := &MockLoginModel{
-		ResponseData: &model.LoginResponse{
+		ResponseData: &auth.LoginResponse{
 			Token: "testToken",
 			Name:  "Jhon",
 		},

@@ -10,19 +10,19 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type MockPollVoteModel struct {
-	InputData *model.PollVoteRequest
+	InputData *poll.VoteRequest
 
-	ResponseData  *model.PollVoteResponse
+	ResponseData  *poll.VoteResponse
 	ResponseError error
 }
 
-func (mock *MockPollVoteModel) Do(input *model.PollVoteRequest) (*model.PollVoteResponse, error) {
+func (mock *MockPollVoteModel) Do(input *poll.VoteRequest) (*poll.VoteResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -112,7 +112,7 @@ func TestPollVoteSuccessful(t *testing.T) {
 	userID := "testUserID"
 
 	modelMock := &MockPollVoteModel{
-		ResponseData: &model.PollVoteResponse{
+		ResponseData: &poll.VoteResponse{
 			ModifiedAnswer: true,
 		},
 	}

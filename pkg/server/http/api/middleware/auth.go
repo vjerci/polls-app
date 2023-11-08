@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
@@ -42,7 +42,7 @@ func (client *Client) WithAuth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		_, err = client.UserRepo.GetUser(userID)
 		if err != nil {
-			if errors.Is(err, model.ErrGetUserUserNotFound) {
+			if errors.Is(err, authmodel.ErrGetUserUserNotFound) {
 				return schema.ErrAuthUserDoesNotExist
 			}
 

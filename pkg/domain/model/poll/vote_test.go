@@ -1,14 +1,14 @@
-package model_test
+package poll_test
 
 import (
 	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 )
 
-type MockPollVoteDB struct {
+type MockVoteDB struct {
 	InputAnswerExistsPollID   string
 	InputAnswerExistsAnswerID string
 
@@ -22,14 +22,14 @@ type MockPollVoteDB struct {
 	ResponseUpsertError error
 }
 
-func (mock *MockPollVoteDB) ExistsPollAnswer(pollID, answerID string) error {
+func (mock *MockVoteDB) ExistsPollAnswer(pollID, answerID string) error {
 	mock.InputAnswerExistsPollID = pollID
 	mock.InputAnswerExistsAnswerID = answerID
 
 	return mock.ResponseAnswerExistsErr
 }
 
-func (mock *MockPollVoteDB) UpsertUserAnswer(pollID, answerID, userID string) (modified bool, err error) {
+func (mock *MockVoteDB) UpsertUserAnswer(pollID, answerID, userID string) (modified bool, err error) {
 	mock.InputUpsertPollID = pollID
 	mock.InputUpsertAnswerID = answerID
 	mock.InputUpsertUserID = userID
@@ -42,27 +42,27 @@ func TestPollVoteErrors(t *testing.T) {
 
 	testCases := []struct {
 		ExpectedError error
-		Input         *model.PollVoteRequest
-		PollVoteDB    *MockPollVoteDB
+		Input         *poll.VoteRequest
+		PollVoteDB    *MockVoteDB
 	}{
 		{
-			ExpectedError: model.ErrPollVotePollIDEmpty,
-			Input: &model.PollVoteRequest{
+			ExpectedError: poll.ErrVotePollIDEmpty,
+			Input: &poll.VoteRequest{
 				PollID: "",
 			},
 			PollVoteDB: nil,
 		},
 		{
-			ExpectedError: model.ErrPollVoteAnswerIDEmpty,
-			Input: &model.PollVoteRequest{
+			ExpectedError: poll.ErrVoteAnswerIDEmpty,
+			Input: &poll.VoteRequest{
 				PollID:   "pollID",
 				AnswerID: "",
 			},
 			PollVoteDB: nil,
 		},
 		{
-			ExpectedError: model.ErrPollVoteUserIDEmpty,
-			Input: &model.PollVoteRequest{
+			ExpectedError: poll.ErrVoteUserIDEmpty,
+			Input: &poll.VoteRequest{
 				PollID:   "pollID",
 				AnswerID: "answerID",
 				UserID:   "",
@@ -70,24 +70,24 @@ func TestPollVoteErrors(t *testing.T) {
 			PollVoteDB: nil,
 		},
 		{
-			ExpectedError: model.ErrPollVoteAnswerNotFound,
-			Input: &model.PollVoteRequest{
+			ExpectedError: poll.ErrVoteAnswerNotFound,
+			Input: &poll.VoteRequest{
 				PollID:   "pollID",
 				AnswerID: "answerID",
 				UserID:   "userID",
 			},
-			PollVoteDB: &MockPollVoteDB{
+			PollVoteDB: &MockVoteDB{
 				ResponseAnswerExistsErr: errors.New("testError"),
 			},
 		},
 		{
-			ExpectedError: model.ErrPollVoteUpsertFailed,
-			Input: &model.PollVoteRequest{
+			ExpectedError: poll.ErrVoteUpsertFailed,
+			Input: &poll.VoteRequest{
 				PollID:   "pollID",
 				AnswerID: "answerID",
 				UserID:   "userID",
 			},
-			PollVoteDB: &MockPollVoteDB{
+			PollVoteDB: &MockVoteDB{
 				ResponseAnswerExistsErr: nil,
 
 				ResponseUpsert:      false,
@@ -97,8 +97,8 @@ func TestPollVoteErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		pollVoteModel := model.PollVoteModel{
-			PollVoteDB: test.PollVoteDB,
+		pollVoteModel := poll.VoteModel{
+			VoteDB: test.PollVoteDB,
 		}
 
 		resp, err := pollVoteModel.Do(test.Input)
@@ -116,20 +116,20 @@ func TestPollVoteErrors(t *testing.T) {
 func TestPollVoteSuccess(t *testing.T) {
 	t.Parallel()
 
-	input := &model.PollVoteRequest{
+	input := &poll.VoteRequest{
 		PollID:   "testPollID",
 		AnswerID: "testAnswerID",
 		UserID:   "testUserID",
 	}
 
-	dbMock := MockPollVoteDB{
+	dbMock := MockVoteDB{
 		ResponseAnswerExistsErr: nil,
 		ResponseUpsert:          true,
 		ResponseUpsertError:     nil,
 	}
 
-	pollVoteModel := model.PollVoteModel{
-		PollVoteDB: &dbMock,
+	pollVoteModel := poll.VoteModel{
+		VoteDB: &dbMock,
 	}
 
 	resp, err := pollVoteModel.Do(input)

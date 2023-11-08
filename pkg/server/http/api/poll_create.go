@@ -5,17 +5,17 @@ import (
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type PollCreateModel interface {
-	Create(data *model.PollCreateRequest) (*model.PollCreateResponse, error)
+	Create(data *poll.CreateRequest) (*poll.CreateResponse, error)
 }
 
 type PollCreateSchemaMap interface {
 	ErrorHandler(err error) *echo.HTTPError
-	Response(input *model.PollCreateResponse) *schema.PollCreateResponse
+	Response(input *poll.CreateResponse) *schema.PollCreateResponse
 }
 
 func (client *API) PollCreate(echoContext echo.Context) error {

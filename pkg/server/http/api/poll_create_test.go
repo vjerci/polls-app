@@ -9,18 +9,18 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type MockPollCreateModel struct {
-	InputData     *model.PollCreateRequest
-	ResponseData  *model.PollCreateResponse
+	InputData     *poll.CreateRequest
+	ResponseData  *poll.CreateResponse
 	ResponseError error
 }
 
-func (mock *MockPollCreateModel) Create(input *model.PollCreateRequest) (*model.PollCreateResponse, error) {
+func (mock *MockPollCreateModel) Create(input *poll.CreateRequest) (*poll.CreateResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -78,7 +78,7 @@ func TestPollCreateSuccessful(t *testing.T) {
 
 	input := strings.NewReader(`{"name":"testName","answers":["answer1","answer2"]}`)
 	pollCreateModelMock := &MockPollCreateModel{
-		ResponseData: &model.PollCreateResponse{
+		ResponseData: &poll.CreateResponse{
 			PollID:     "pollID",
 			AnswersIDS: []string{"answerID1", "answerID2"},
 		},

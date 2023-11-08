@@ -1,4 +1,4 @@
-package model
+package auth
 
 import "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 

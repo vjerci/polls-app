@@ -24,8 +24,9 @@ type API struct {
 }
 
 type Models struct {
-	Login    LoginModel
-	Register RegisterModel
+	Login       LoginModel
+	Register    RegisterModel
+	LoginGoogle LoginGoogleModel
 
 	PollList    PollListModel
 	PollDetails PollDetailsModel
@@ -35,8 +36,9 @@ type Models struct {
 }
 
 type SchemaMap struct {
-	Login    LoginSchemaMap
-	Register RegisterSchemaMap
+	Login       LoginSchemaMap
+	Register    RegisterSchemaMap
+	LoginGoogle LoginGoogleSchemaMap
 
 	PollList    PollListSchemaMap
 	PollDetails PollDetailsSchemaMap

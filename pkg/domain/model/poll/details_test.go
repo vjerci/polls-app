@@ -1,4 +1,4 @@
-package model_test
+package poll_test
 
 import (
 	"errors"
@@ -6,38 +6,38 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 )
 
-type MockPollDetailsDB struct {
-	InputDetailsPollID string
+type MockDetailsDB struct {
+	InputDetailsID     string
 	ResponseDetailsErr error
 	ResponseDetails    *db.PollDetailsResponse
 
-	InputAnswersPollID string
+	InputAnswersID     string
 	ResponseAnswersErr error
 	ResponseAnswers    []db.PollDetailsAnswer
 
-	InputUserAnswerPollID string
+	InputUserAnswerID     string
 	InputUserAnswerUserID string
 	ResponseUserAnswerErr error
 	ResponseUserAnswer    string
 }
 
-func (mock *MockPollDetailsDB) GetPollDetails(pollID string) (*db.PollDetailsResponse, error) {
-	mock.InputDetailsPollID = pollID
+func (mock *MockDetailsDB) GetPollDetails(pollID string) (*db.PollDetailsResponse, error) {
+	mock.InputDetailsID = pollID
 
 	return mock.ResponseDetails, mock.ResponseDetailsErr
 }
 
-func (mock *MockPollDetailsDB) GetPollDetailsAnswers(pollID string) ([]db.PollDetailsAnswer, error) {
-	mock.InputAnswersPollID = pollID
+func (mock *MockDetailsDB) GetPollDetailsAnswers(pollID string) ([]db.PollDetailsAnswer, error) {
+	mock.InputAnswersID = pollID
 
 	return mock.ResponseAnswers, mock.ResponseAnswersErr
 }
 
-func (mock *MockPollDetailsDB) GetUserAnswer(pollID string, userID string) (string, error) {
-	mock.InputUserAnswerPollID = pollID
+func (mock *MockDetailsDB) GetUserAnswer(pollID string, userID string) (string, error) {
+	mock.InputUserAnswerID = pollID
 	mock.InputUserAnswerUserID = userID
 
 	return mock.ResponseUserAnswer, mock.ResponseUserAnswerErr
@@ -48,54 +48,54 @@ func TestPollDetailsErrors(t *testing.T) {
 
 	testCases := []struct {
 		ExpectedError error
-		Input         *model.PollDetailsRequest
-		PollDetailsDB *MockPollDetailsDB
+		Input         *poll.DetailsRequest
+		PollDetailsDB *MockDetailsDB
 	}{
 		{
-			ExpectedError: model.ErrPollDetailsIDEmpty,
-			Input: &model.PollDetailsRequest{
-				PollID: "",
+			ExpectedError: poll.ErrDetailsIDEmpty,
+			Input: &poll.DetailsRequest{
+				ID:     "",
 				UserID: "userID",
 			},
 			PollDetailsDB: nil,
 		},
 		{
-			ExpectedError: model.ErrPollDetailsUserIDEmpty,
-			Input: &model.PollDetailsRequest{
-				PollID: "pollID",
+			ExpectedError: poll.ErrDetailsUserIDEmpty,
+			Input: &poll.DetailsRequest{
+				ID:     "pollID",
 				UserID: "",
 			},
 			PollDetailsDB: nil,
 		},
 		{
-			ExpectedError: model.ErrPollDetailsNoPoll,
-			Input: &model.PollDetailsRequest{
-				PollID: "pollID",
+			ExpectedError: poll.ErrDetailsNoPoll,
+			Input: &poll.DetailsRequest{
+				ID:     "pollID",
 				UserID: "userID",
 			},
-			PollDetailsDB: &MockPollDetailsDB{
+			PollDetailsDB: &MockDetailsDB{
 				ResponseDetails:    nil,
 				ResponseDetailsErr: db.ErrPollDetailsNotFound,
 			},
 		},
 		{
-			ExpectedError: model.ErrPollDetailsQueryInfo,
-			Input: &model.PollDetailsRequest{
-				PollID: "pollID",
+			ExpectedError: poll.ErrDetailsQueryInfo,
+			Input: &poll.DetailsRequest{
+				ID:     "pollID",
 				UserID: "userID",
 			},
-			PollDetailsDB: &MockPollDetailsDB{
+			PollDetailsDB: &MockDetailsDB{
 				ResponseDetails:    nil,
 				ResponseDetailsErr: errors.New("test error"),
 			},
 		},
 		{
-			ExpectedError: model.ErrPollDetailsAnswers,
-			Input: &model.PollDetailsRequest{
-				PollID: "pollID",
+			ExpectedError: poll.ErrDetailsAnswers,
+			Input: &poll.DetailsRequest{
+				ID:     "pollID",
 				UserID: "userID",
 			},
-			PollDetailsDB: &MockPollDetailsDB{
+			PollDetailsDB: &MockDetailsDB{
 				ResponseDetails:    &db.PollDetailsResponse{},
 				ResponseDetailsErr: nil,
 
@@ -103,12 +103,12 @@ func TestPollDetailsErrors(t *testing.T) {
 			},
 		},
 		{
-			ExpectedError: model.ErrPollDetailsUserAnswer,
-			Input: &model.PollDetailsRequest{
-				PollID: "pollID",
+			ExpectedError: poll.ErrDetailsUserAnswer,
+			Input: &poll.DetailsRequest{
+				ID:     "pollID",
 				UserID: "userID",
 			},
-			PollDetailsDB: &MockPollDetailsDB{
+			PollDetailsDB: &MockDetailsDB{
 				ResponseDetails:    &db.PollDetailsResponse{},
 				ResponseDetailsErr: nil,
 
@@ -122,8 +122,8 @@ func TestPollDetailsErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		pollDetailsModel := model.PollDetailsModel{
-			PollDetailsDB: test.PollDetailsDB,
+		pollDetailsModel := poll.DetailsModel{
+			DetailsDB: test.PollDetailsDB,
 		}
 
 		resp, err := pollDetailsModel.Get(test.Input)
@@ -142,15 +142,15 @@ func TestPollDetailsSuccess(t *testing.T) {
 	t.Parallel()
 
 	testsCases := []struct {
-		Input         *model.PollDetailsRequest
-		PollDetailsDB *MockPollDetailsDB
+		Input         *poll.DetailsRequest
+		PollDetailsDB *MockDetailsDB
 	}{
 		{
-			Input: &model.PollDetailsRequest{
+			Input: &poll.DetailsRequest{
 				UserID: "userID",
-				PollID: "pollID",
+				ID:     "pollID",
 			},
-			PollDetailsDB: &MockPollDetailsDB{
+			PollDetailsDB: &MockDetailsDB{
 				ResponseDetails: &db.PollDetailsResponse{
 					Name: "pollName",
 					ID:   "pollID",
@@ -171,11 +171,11 @@ func TestPollDetailsSuccess(t *testing.T) {
 			},
 		},
 		{
-			Input: &model.PollDetailsRequest{
+			Input: &poll.DetailsRequest{
 				UserID: "userID",
-				PollID: "pollID",
+				ID:     "pollID",
 			},
-			PollDetailsDB: &MockPollDetailsDB{
+			PollDetailsDB: &MockDetailsDB{
 				ResponseDetails: &db.PollDetailsResponse{
 					Name: "pollName",
 					ID:   "pollID",
@@ -199,8 +199,8 @@ func TestPollDetailsSuccess(t *testing.T) {
 	}
 
 	for _, test := range testsCases {
-		pollDetailsModel := model.PollDetailsModel{
-			PollDetailsDB: test.PollDetailsDB,
+		pollDetailsModel := poll.DetailsModel{
+			DetailsDB: test.PollDetailsDB,
 		}
 
 		resp, err := pollDetailsModel.Get(test.Input)
@@ -210,16 +210,16 @@ func TestPollDetailsSuccess(t *testing.T) {
 		}
 
 		assert.EqualValues(t,
-			test.Input.PollID,
-			test.PollDetailsDB.InputDetailsPollID,
+			test.Input.ID,
+			test.PollDetailsDB.InputDetailsID,
 			"expected poll id to be passed to db when querying for details")
 		assert.EqualValues(t,
-			test.Input.PollID,
-			test.PollDetailsDB.InputAnswersPollID,
+			test.Input.ID,
+			test.PollDetailsDB.InputAnswersID,
 			"expected poll id to be passed to db when querying for answers")
 		assert.EqualValues(t,
-			test.Input.PollID,
-			test.PollDetailsDB.InputUserAnswerPollID,
+			test.Input.ID,
+			test.PollDetailsDB.InputUserAnswerID,
 			"expected poll id to be passed to db when querying for user answer")
 		assert.EqualValues(t,
 			test.Input.UserID,

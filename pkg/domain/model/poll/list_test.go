@@ -1,4 +1,4 @@
-package model_test
+package poll_test
 
 import (
 	"errors"
@@ -6,29 +6,29 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 )
 
-type MockPollsListDB struct {
+type MockListDB struct {
 	InputPage     int
 	Response      []db.PollListData
 	ResponseError error
 }
 
-func (mock *MockPollsListDB) GetPollList(page int) ([]db.PollListData, error) {
+func (mock *MockListDB) GetPollList(page int) ([]db.PollListData, error) {
 	mock.InputPage = page
 
 	return mock.Response, mock.ResponseError
 }
 
-type MockPollCountDB struct {
+type MockCountDB struct {
 	InputPage int
 
 	Response      bool
 	ResponseError error
 }
 
-func (mock *MockPollCountDB) HasNextPage(page int) (bool, error) {
+func (mock *MockCountDB) HasNextPage(page int) (bool, error) {
 	mock.InputPage = page
 
 	return mock.Response, mock.ResponseError
@@ -39,43 +39,43 @@ func TestPollsListErrors(t *testing.T) {
 
 	testCases := []struct {
 		ExpectedError error
-		Input         *model.PollListRequest
+		Input         *poll.ListRequest
 
-		MockPollsListDB *MockPollsListDB
-		MockPollCountDB *MockPollCountDB
+		MockListDB  *MockListDB
+		MockCountDB *MockCountDB
 	}{
 		{
-			ExpectedError: model.ErrPollListInvalidPage,
-			Input: &model.PollListRequest{
+			ExpectedError: poll.ErrListInvalidPage,
+			Input: &poll.ListRequest{
 				Page: -1,
 			},
-			MockPollsListDB: nil,
+			MockListDB: nil,
 		},
 		{
-			ExpectedError: model.ErrPollListDB,
-			Input: &model.PollListRequest{
+			ExpectedError: poll.ErrListDB,
+			Input: &poll.ListRequest{
 				Page: 0,
 			},
-			MockPollsListDB: &MockPollsListDB{
+			MockListDB: &MockListDB{
 				ResponseError: errors.New("test error"),
 			},
 		},
 		{
-			ExpectedError: model.ErrPollListNoPolls,
-			Input: &model.PollListRequest{
+			ExpectedError: poll.ErrListNoPolls,
+			Input: &poll.ListRequest{
 				Page: 0,
 			},
-			MockPollsListDB: &MockPollsListDB{
+			MockListDB: &MockListDB{
 				Response:      nil,
 				ResponseError: nil,
 			},
 		},
 		{
-			ExpectedError: model.ErrPollListDBNextPage,
-			Input: &model.PollListRequest{
+			ExpectedError: poll.ErrListDBNextPage,
+			Input: &poll.ListRequest{
 				Page: 0,
 			},
-			MockPollsListDB: &MockPollsListDB{
+			MockListDB: &MockListDB{
 				Response: []db.PollListData{
 					{
 						Name: "test",
@@ -84,7 +84,7 @@ func TestPollsListErrors(t *testing.T) {
 				},
 				ResponseError: nil,
 			},
-			MockPollCountDB: &MockPollCountDB{
+			MockCountDB: &MockCountDB{
 				Response:      false,
 				ResponseError: errors.New("test error"),
 			},
@@ -92,12 +92,12 @@ func TestPollsListErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		pollListModel := model.PollListModel{
-			PollListDB:          test.MockPollsListDB,
-			PollCountRepository: test.MockPollCountDB,
+		listModel := poll.ListModel{
+			ListDB:  test.MockListDB,
+			CountDB: test.MockCountDB,
 		}
 
-		resp, err := pollListModel.Get(test.Input)
+		resp, err := listModel.Get(test.Input)
 
 		if !errors.Is(err, test.ExpectedError) {
 			t.Fatalf(`expected to get error "%s" got "%s" instead`, test.ExpectedError, err)
@@ -112,7 +112,7 @@ func TestPollsListErrors(t *testing.T) {
 func TestPollListSuccess(t *testing.T) {
 	t.Parallel()
 
-	pollListDBMock := &MockPollsListDB{
+	listDBMock := &MockListDB{
 		ResponseError: nil,
 		Response: []db.PollListData{
 			{
@@ -126,16 +126,16 @@ func TestPollListSuccess(t *testing.T) {
 		},
 	}
 
-	pollCountDBMock := &MockPollCountDB{
+	countDBMock := &MockCountDB{
 		Response: true,
 	}
 
-	pollListModel := model.PollListModel{
-		PollListDB:          pollListDBMock,
-		PollCountRepository: pollCountDBMock,
+	pollListModel := poll.ListModel{
+		ListDB:  listDBMock,
+		CountDB: countDBMock,
 	}
 
-	input := &model.PollListRequest{
+	input := &poll.ListRequest{
 		Page: 1,
 	}
 
@@ -145,15 +145,15 @@ func TestPollListSuccess(t *testing.T) {
 		t.Fatalf(`expected no err but got "%s" instead`, err)
 	}
 
-	assert.EqualValues(t, input.Page, pollListDBMock.InputPage, "expected input page to be passed to pollsListDB")
-	assert.EqualValues(t, input.Page, pollCountDBMock.InputPage, "expected input page to be passed to pollCountDB")
+	assert.EqualValues(t, input.Page, listDBMock.InputPage, "expected input page to be passed to pollsListDB")
+	assert.EqualValues(t, input.Page, countDBMock.InputPage, "expected input page to be passed to pollCountDB")
 
 	assert.EqualValues(t,
-		pollCountDBMock.Response,
+		countDBMock.Response,
 		resp.HasNext,
 		"expected to pass hasNextPage got from database to response")
 
-	for i, v := range pollListDBMock.Response {
+	for i, v := range listDBMock.Response {
 		assert.EqualValues(t, resp.Polls[i].Name, v.Name, "expected returned Name to match response from pollsListDB")
 		assert.EqualValues(t, resp.Polls[i].ID, v.ID, "expected returned ID to match response from pollsListDB")
 	}

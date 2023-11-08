@@ -5,17 +5,17 @@ import (
 	"strconv"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type PollListModel interface {
-	Get(data *model.PollListRequest) (*model.PollListResponse, error)
+	Get(data *poll.ListRequest) (*poll.ListResponse, error)
 }
 
 type PollListSchemaMap interface {
 	ErrorHandler(err error) *echo.HTTPError
-	Response(input *model.PollListResponse) *schema.PollListResponse
+	Response(input *poll.ListResponse) *schema.PollListResponse
 }
 
 func (client *API) PollList(echoContext echo.Context) error {
@@ -32,7 +32,7 @@ func (client *API) PollList(echoContext echo.Context) error {
 		}
 	}
 
-	resp, err := client.models.PollList.Get(&model.PollListRequest{
+	resp, err := client.models.PollList.Get(&poll.ListRequest{
 		Page: page,
 	})
 	if err != nil {

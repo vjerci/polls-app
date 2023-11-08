@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 )
 
 type PollListSchemaMap struct{}
@@ -20,7 +20,7 @@ type GeneralPollInfo struct {
 	ID   string `json:"id"`
 }
 
-func (mapper *PollListSchemaMap) Response(input *model.PollListResponse) *PollListResponse {
+func (mapper *PollListSchemaMap) Response(input *poll.ListResponse) *PollListResponse {
 	polls := make([]GeneralPollInfo, len(input.Polls))
 	for i, v := range input.Polls {
 		polls[i] = GeneralPollInfo{
@@ -59,11 +59,11 @@ var ErrPollListPageNotInt = &echo.HTTPError{
 }
 
 func (mapper *PollListSchemaMap) ErrorHandler(err error) *echo.HTTPError {
-	if errors.Is(err, model.ErrPollListInvalidPage) {
+	if errors.Is(err, poll.ErrListInvalidPage) {
 		return ErrPollListInvalidPage.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrPollListNoPolls) {
+	if errors.Is(err, poll.ErrListNoPolls) {
 		return ErrPollListNoData.WithInternal(err)
 	}
 

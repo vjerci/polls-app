@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
@@ -19,15 +19,15 @@ func TestPollCreateErrors(t *testing.T) {
 	}{
 		{
 			ExpectedError: schema.ErrPollCreateAnswerEmpty,
-			InputError:    model.ErrPollCreateAnswerEmpty,
+			InputError:    poll.ErrCreateAnswerEmpty,
 		},
 		{
 			ExpectedError: schema.ErrPollCreateAnswersLen,
-			InputError:    model.ErrPollCreateAnswersLen,
+			InputError:    poll.ErrCreateAnswersLen,
 		},
 		{
 			ExpectedError: schema.ErrPollCreateNameEmpty,
-			InputError:    model.ErrPollCreateNameEmpty,
+			InputError:    poll.ErrCreateNameEmpty,
 		},
 		{
 			ExpectedError: schema.ErrPollCreateModel,
@@ -65,7 +65,7 @@ func TestPollCreateInputConversion(t *testing.T) {
 func TestPollCreateResponseConversion(t *testing.T) {
 	t.Parallel()
 
-	output := model.PollCreateResponse{
+	output := poll.CreateResponse{
 		PollID:     "pollID",
 		AnswersIDS: []string{"answer1", "answer2"},
 	}

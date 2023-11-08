@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	modelauth "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type RegisterModel interface {
-	Do(input *model.RegisterRequest) (accessToken auth.AccessToken, err error)
+	Do(input *modelauth.RegisterRequest) (accessToken auth.AccessToken, err error)
 }
 
 type RegisterSchemaMap interface {

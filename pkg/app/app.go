@@ -6,8 +6,11 @@ import (
 	echo "github.com/labstack/echo/v4"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
+
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/googleauth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api/middleware"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/router"
@@ -24,15 +27,16 @@ func New(settings config.Config) (*echo.Echo, error) {
 	}
 
 	authClient := auth.New(settings.JWTSigningKey)
+	googleAuthClient := googleauth.New(settings.GoogleClientID)
 
 	apiClient := api.New(
-		newModel(dbClient, authClient),
+		newModel(dbClient, authClient, googleAuthClient),
 		newSchemaMap(),
 	)
 
 	middlewareClient := middleware.Client{
 		AuthRepo: authClient,
-		UserRepo: &model.UserModel{
+		UserRepo: &authmodel.UserModel{
 			UserDB: dbClient,
 		},
 	}
@@ -52,28 +56,34 @@ func New(settings config.Config) (*echo.Echo, error) {
 	return routeHandler.Build(), nil
 }
 
-func newModel(dbClient *db.DB, authClient model.AuthRepository) *api.Models {
+func newModel(dbClient *db.DB, authClient authmodel.AuthRepository, googleAuthClient authmodel.GoogleAuthRepository) *api.Models {
 	return &api.Models{
-		Login: &model.LoginModel{
+		Login: &authmodel.LoginModel{
 			AuthDB: authClient,
 			UserDB: dbClient,
 		},
-		Register: &model.RegisterModel{
+		Register: &authmodel.RegisterModel{
 			RegisterDB: dbClient,
 			AuthDB:     authClient,
 		},
-		PollList: &model.PollListModel{
-			PollListDB:          dbClient,
-			PollCountRepository: dbClient,
+		LoginGoogle: &authmodel.LoginGoogleModel{
+			AuthDB:       authClient,
+			GoogleAuthDB: googleAuthClient,
+			UserDB:       dbClient,
+			RegisterDB:   dbClient,
 		},
-		PollDetails: &model.PollDetailsModel{
-			PollDetailsDB: dbClient,
+		PollList: &poll.ListModel{
+			ListDB:  dbClient,
+			CountDB: dbClient,
 		},
-		PollCreate: &model.PollCreateModel{
-			PollCreateDB: dbClient,
+		PollDetails: &poll.DetailsModel{
+			DetailsDB: dbClient,
 		},
-		PollVote: &model.PollVoteModel{
-			PollVoteDB: dbClient,
+		PollCreate: &poll.CreateModel{
+			CreateDB: dbClient,
+		},
+		PollVote: &poll.VoteModel{
+			VoteDB: dbClient,
 		},
 	}
 }
@@ -82,6 +92,7 @@ func newSchemaMap() *api.SchemaMap {
 	return &api.SchemaMap{
 		Login:       &schema.LoginSchemaMap{},
 		Register:    &schema.RegisterSchemaMap{},
+		LoginGoogle: &schema.LoginGoogleSchemaMap{},
 		PollList:    &schema.PollListSchemaMap{},
 		PollDetails: &schema.PollDetailsSchemaMap{},
 		PollCreate:  &schema.PollCreateSchemaMap{},

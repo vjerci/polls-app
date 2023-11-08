@@ -9,18 +9,18 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type MockPollsListModel struct {
-	InputData     *model.PollListRequest
-	ResponseData  *model.PollListResponse
+	InputData     *poll.ListRequest
+	ResponseData  *poll.ListResponse
 	ResponseError error
 }
 
-func (mock *MockPollsListModel) Get(input *model.PollListRequest) (*model.PollListResponse, error) {
+func (mock *MockPollsListModel) Get(input *poll.ListRequest) (*poll.ListResponse, error) {
 	mock.InputData = input
 
 	return mock.ResponseData, mock.ResponseError
@@ -78,8 +78,8 @@ func TestPollListSuccessful(t *testing.T) {
 
 	input := `{"page":4}`
 	pollListModelMock := &MockPollsListModel{
-		ResponseData: &model.PollListResponse{
-			Polls: []model.GeneralPollInfo{
+		ResponseData: &poll.ListResponse{
+			Polls: []poll.GeneralInfo{
 				{
 					Name: "Do you want a lift?",
 					ID:   "1",

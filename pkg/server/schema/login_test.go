@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
@@ -19,11 +19,11 @@ func TestLoginErrors(t *testing.T) {
 	}{
 		{
 			ExpectedError: schema.ErrLoginUserDoesNotExist,
-			InputError:    model.ErrLoginUserNotFound,
+			InputError:    auth.ErrLoginUserNotFound,
 		},
 		{
 			ExpectedError: schema.ErrLoginUserIDNotSet,
-			InputError:    model.ErrLoginUserIDNotSet,
+			InputError:    auth.ErrLoginUserIDNotSet,
 		},
 		{
 			ExpectedError: schema.ErrLoginModel,
@@ -56,7 +56,7 @@ func TestLoginInputConversion(t *testing.T) {
 func TestLoginResponseConversion(t *testing.T) {
 	t.Parallel()
 
-	output := model.LoginResponse{
+	output := auth.LoginResponse{
 		Token: "token",
 		Name:  "Jhon",
 	}

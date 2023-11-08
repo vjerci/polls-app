@@ -5,15 +5,15 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 )
 
 type LoginRequest struct {
 	UserID string `json:"user_id"`
 }
 
-func (req *LoginRequest) ToModel() *model.LoginRequest {
-	return &model.LoginRequest{
+func (req *LoginRequest) ToModel() *auth.LoginRequest {
+	return &auth.LoginRequest{
 		UserID: req.UserID,
 	}
 }
@@ -25,7 +25,7 @@ type LoginResponse struct {
 	Name  string `json:"name"`
 }
 
-func (mapper *LoginSchemaMap) Response(input *model.LoginResponse) *LoginResponse {
+func (mapper *LoginSchemaMap) Response(input *auth.LoginResponse) *LoginResponse {
 	return &LoginResponse{
 		Token: input.Token,
 		Name:  input.Name,
@@ -56,11 +56,11 @@ var ErrLoginModel = &echo.HTTPError{
 }
 
 func (mapper *LoginSchemaMap) ErrorHandler(err error) *echo.HTTPError {
-	if errors.Is(err, model.ErrLoginUserIDNotSet) {
+	if errors.Is(err, auth.ErrLoginUserIDNotSet) {
 		return ErrLoginUserIDNotSet.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrLoginUserNotFound) {
+	if errors.Is(err, auth.ErrLoginUserNotFound) {
 		return ErrLoginUserDoesNotExist.WithInternal(err)
 	}
 

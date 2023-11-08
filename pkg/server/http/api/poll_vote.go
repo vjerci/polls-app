@@ -6,17 +6,17 @@ import (
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type PollVoteModel interface {
-	Do(data *model.PollVoteRequest) (*model.PollVoteResponse, error)
+	Do(data *poll.VoteRequest) (*poll.VoteResponse, error)
 }
 
 type PollVoteSchemaMap interface {
 	ErrorHandler(err error) *echo.HTTPError
-	Response(*model.PollVoteResponse) *schema.PollVoteResponse
+	Response(*poll.VoteResponse) *schema.PollVoteResponse
 }
 
 func (client *API) PollVote(echoContext echo.Context) error {
@@ -34,7 +34,7 @@ func (client *API) PollVote(echoContext echo.Context) error {
 		return schema.ErrPollVoteJSONDecode.WithInternal(err)
 	}
 
-	resp, err := client.models.PollVote.Do(&model.PollVoteRequest{
+	resp, err := client.models.PollVote.Do(&poll.VoteRequest{
 		PollID:   echoContext.Param("id"),
 		AnswerID: data.AnswerID,
 		UserID:   userIDS,

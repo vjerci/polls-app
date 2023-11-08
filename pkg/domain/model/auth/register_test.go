@@ -1,4 +1,4 @@
-package model_test
+package auth_test
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 )
 
 type MockRegisterDB struct {
@@ -27,13 +27,13 @@ func TestRegisterErrors(t *testing.T) {
 
 	testCases := []struct {
 		ExpectedError  error
-		Input          *model.RegisterRequest
+		Input          *auth.RegisterRequest
 		RegisterDBMock *MockRegisterDB
 		AuthDBMock     *MockAuthDB
 	}{
 		{
-			ExpectedError: model.ErrRegisterUserIDNotSet,
-			Input: &model.RegisterRequest{
+			ExpectedError: auth.ErrRegisterUserIDNotSet,
+			Input: &auth.RegisterRequest{
 				UserID: "",
 				Name:   "name",
 			},
@@ -42,8 +42,8 @@ func TestRegisterErrors(t *testing.T) {
 		},
 
 		{
-			ExpectedError: model.ErrRegisterNameNotSet,
-			Input: &model.RegisterRequest{
+			ExpectedError: auth.ErrRegisterNameNotSet,
+			Input: &auth.RegisterRequest{
 				UserID: "userID",
 				Name:   "",
 			},
@@ -51,8 +51,8 @@ func TestRegisterErrors(t *testing.T) {
 			AuthDBMock:     &MockAuthDB{},
 		},
 		{
-			ExpectedError: model.ErrRegisterDuplicate,
-			Input: &model.RegisterRequest{
+			ExpectedError: auth.ErrRegisterDuplicate,
+			Input: &auth.RegisterRequest{
 				UserID: "userID",
 				Name:   "name",
 			},
@@ -62,8 +62,8 @@ func TestRegisterErrors(t *testing.T) {
 			AuthDBMock: &MockAuthDB{},
 		},
 		{
-			ExpectedError: model.ErrRegisterDB,
-			Input: &model.RegisterRequest{
+			ExpectedError: auth.ErrRegisterDB,
+			Input: &auth.RegisterRequest{
 				UserID: "userID",
 				Name:   "name",
 			},
@@ -73,8 +73,8 @@ func TestRegisterErrors(t *testing.T) {
 			AuthDBMock: &MockAuthDB{},
 		},
 		{
-			ExpectedError: model.ErrRegisterCreateAccessToken,
-			Input: &model.RegisterRequest{
+			ExpectedError: auth.ErrRegisterCreateAccessToken,
+			Input: &auth.RegisterRequest{
 				UserID: "userID",
 				Name:   "name",
 			},
@@ -88,7 +88,7 @@ func TestRegisterErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		registerModel := model.RegisterModel{
+		registerModel := auth.RegisterModel{
 			RegisterDB: test.RegisterDBMock,
 			AuthDB:     test.AuthDBMock,
 		}
@@ -115,12 +115,12 @@ func TestRegisterSuccess(t *testing.T) {
 		ResponseAccessToken: "testToken",
 	}
 
-	registerModel := model.RegisterModel{
+	registerModel := auth.RegisterModel{
 		RegisterDB: registerDBMock,
 		AuthDB:     authDBMock,
 	}
 
-	input := &model.RegisterRequest{
+	input := &auth.RegisterRequest{
 		UserID: "userID",
 		Name:   "name",
 	}

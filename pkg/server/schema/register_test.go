@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
@@ -21,15 +21,15 @@ func TestRegisterErrors(t *testing.T) {
 
 		{
 			ExpectedError: schema.ErrRegisterUserIDNotSet,
-			InputError:    model.ErrRegisterUserIDNotSet,
+			InputError:    authmodel.ErrRegisterUserIDNotSet,
 		},
 		{
 			ExpectedError: schema.ErrRegisterNameNotSet,
-			InputError:    model.ErrRegisterNameNotSet,
+			InputError:    authmodel.ErrRegisterNameNotSet,
 		},
 		{
 			ExpectedError: schema.ErrRegisterUserDuplicate,
-			InputError:    model.ErrRegisterDuplicate,
+			InputError:    authmodel.ErrRegisterDuplicate,
 		},
 		{
 			ExpectedError: schema.ErrRegisterModel,

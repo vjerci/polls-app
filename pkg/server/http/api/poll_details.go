@@ -5,17 +5,17 @@ import (
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type PollDetailsModel interface {
-	Get(data *model.PollDetailsRequest) (*model.PollDetailsResponse, error)
+	Get(data *poll.DetailsRequest) (*poll.DetailsResponse, error)
 }
 
 type PollDetailsSchemaMap interface {
 	ErrorHandler(err error) *echo.HTTPError
-	Response(input *model.PollDetailsResponse) *schema.PollDetailsResponse
+	Response(input *poll.DetailsResponse) *schema.PollDetailsResponse
 }
 
 func (client *API) PollDetails(echoContext echo.Context) error {
@@ -26,8 +26,8 @@ func (client *API) PollDetails(echoContext echo.Context) error {
 		return ErrUserIDIsNotString.WithInternal(fmt.Errorf("got %#v for userID", userID))
 	}
 
-	resp, err := client.models.PollDetails.Get(&model.PollDetailsRequest{
-		PollID: echoContext.Param("id"),
+	resp, err := client.models.PollDetails.Get(&poll.DetailsRequest{
+		ID:     echoContext.Param("id"),
 		UserID: userIDS,
 	})
 	if err != nil {

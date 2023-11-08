@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
 )
 
@@ -14,8 +14,8 @@ type RegisterRequest struct {
 	Name   string `json:"name"`
 }
 
-func (req *RegisterRequest) ToModel() *model.RegisterRequest {
-	return &model.RegisterRequest{
+func (req *RegisterRequest) ToModel() *authmodel.RegisterRequest {
+	return &authmodel.RegisterRequest{
 		UserID: req.UserID,
 		Name:   req.Name,
 	}
@@ -56,15 +56,15 @@ var ErrRegisterJSONDecode = &echo.HTTPError{
 }
 
 func (mapper *RegisterSchemaMap) ErrorHandler(err error) *echo.HTTPError {
-	if errors.Is(err, model.ErrRegisterUserIDNotSet) {
+	if errors.Is(err, authmodel.ErrRegisterUserIDNotSet) {
 		return ErrRegisterUserIDNotSet.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrRegisterNameNotSet) {
+	if errors.Is(err, authmodel.ErrRegisterNameNotSet) {
 		return ErrRegisterNameNotSet.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrRegisterDuplicate) {
+	if errors.Is(err, authmodel.ErrRegisterDuplicate) {
 		return ErrRegisterUserDuplicate.WithInternal(err)
 	}
 

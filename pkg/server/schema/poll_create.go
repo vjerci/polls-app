@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 )
 
 type PollCreateRequest struct {
@@ -13,8 +13,8 @@ type PollCreateRequest struct {
 	Answers []string `json:"answers"`
 }
 
-func (req *PollCreateRequest) ToModel() *model.PollCreateRequest {
-	return &model.PollCreateRequest{
+func (req *PollCreateRequest) ToModel() *poll.CreateRequest {
+	return &poll.CreateRequest{
 		Name:    req.Name,
 		Answers: req.Answers,
 	}
@@ -27,7 +27,7 @@ type PollCreateResponse struct {
 	AnswersIDS []string `json:"answers_ids"`
 }
 
-func (mapper *PollCreateSchemaMap) Response(input *model.PollCreateResponse) *PollCreateResponse {
+func (mapper *PollCreateSchemaMap) Response(input *poll.CreateResponse) *PollCreateResponse {
 	return &PollCreateResponse{
 		ID:         input.PollID,
 		AnswersIDS: input.AnswersIDS,
@@ -63,15 +63,15 @@ var ErrPollCreateModel = &echo.HTTPError{
 }
 
 func (mapper *PollCreateSchemaMap) ErrorHandler(err error) *echo.HTTPError {
-	if errors.Is(err, model.ErrPollCreateNameEmpty) {
+	if errors.Is(err, poll.ErrCreateNameEmpty) {
 		return ErrPollCreateNameEmpty.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrPollCreateAnswersLen) {
+	if errors.Is(err, poll.ErrCreateAnswersLen) {
 		return ErrPollCreateAnswersLen.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrPollCreateAnswerEmpty) {
+	if errors.Is(err, poll.ErrCreateAnswerEmpty) {
 		return ErrPollCreateAnswerEmpty.WithInternal(err)
 	}
 

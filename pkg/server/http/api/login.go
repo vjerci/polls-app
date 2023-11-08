@@ -5,17 +5,17 @@ import (
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
 )
 
 type LoginModel interface {
-	Do(data *model.LoginRequest) (resp *model.LoginResponse, err error)
+	Do(data *auth.LoginRequest) (resp *auth.LoginResponse, err error)
 }
 
 type LoginSchemaMap interface {
 	ErrorHandler(err error) *echo.HTTPError
-	Response(input *model.LoginResponse) *schema.LoginResponse
+	Response(input *auth.LoginResponse) *schema.LoginResponse
 }
 
 func (client *API) Login(echoContext echo.Context) error {

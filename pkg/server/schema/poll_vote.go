@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 )
 
 type PollVoteRequest struct {
@@ -18,7 +18,7 @@ type PollVoteResponse struct {
 	ModifiedAnswer bool `json:"modified_answer"`
 }
 
-func (mapper *PollVoteSchemaMap) Response(input *model.PollVoteResponse) *PollVoteResponse {
+func (mapper *PollVoteSchemaMap) Response(input *poll.VoteResponse) *PollVoteResponse {
 	return &PollVoteResponse{
 		ModifiedAnswer: input.ModifiedAnswer,
 	}
@@ -59,19 +59,19 @@ var ErrPollVoteModel = &echo.HTTPError{
 }
 
 func (mapper *PollVoteSchemaMap) ErrorHandler(err error) *echo.HTTPError {
-	if errors.Is(err, model.ErrPollVoteAnswerNotFound) {
+	if errors.Is(err, poll.ErrVoteAnswerNotFound) {
 		return ErrPollVoteInvalidVote.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrPollVotePollIDEmpty) {
+	if errors.Is(err, poll.ErrVotePollIDEmpty) {
 		return ErrPollVoteInvalidPollID.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrPollVoteAnswerIDEmpty) {
+	if errors.Is(err, poll.ErrVoteAnswerIDEmpty) {
 		return ErrPollVoteInvalidAnswerID.WithInternal(err)
 	}
 
-	if errors.Is(err, model.ErrPollVoteUserIDEmpty) {
+	if errors.Is(err, poll.ErrVoteUserIDEmpty) {
 		return ErrPollVoteInvalidUserID.WithInternal(err)
 	}
 

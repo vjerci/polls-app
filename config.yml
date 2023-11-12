@@ -1,6 +1,5 @@
 POSTGRES_URL: "postgresql://postgres:mysecretpassword@localhost:5432/polls"
 JWT_KEY: y5XYbfKoqOqGa+XVggMZs4yvcE6SwWS9Q9UBZviMw0A=
 HTTP_PORT: ":1313"
-GRPC_PORT: "1314"
 GOOGLE_CLIENT_ID: "113888008837-i0p25e79564rsr4bnf444g0rhstekpt2.apps.googleusercontent.com"
 DEBUG: true

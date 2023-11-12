@@ -2,7 +2,13 @@ services:
   example-app:
     build: .
     ports:
-      - "8000:8000"
+      - ${HTTP_PORT}:${HTTP_PORT}
+    environment:
+      - HTTP_PORT=${HTTP_PORT}
+      - JWT_KEY=${JWT_KEY}
+      - POSTGRES_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgre:5432/${POSTGRES_DB}
+    depends_on:
+      - postgre
   postgre:
     image: postgres:15.4-alpine3.18
     ports:

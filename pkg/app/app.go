@@ -14,7 +14,7 @@ import (
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api/middleware"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/router"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
 )
 
 var ErrDBConnect = errors.New("failed to connect to database")

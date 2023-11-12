@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
 )
 
 type Client struct {

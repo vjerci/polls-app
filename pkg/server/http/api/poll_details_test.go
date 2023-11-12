@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
+	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
 )
 
 type MockPollDetailsModel struct {

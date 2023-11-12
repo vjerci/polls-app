@@ -7,10 +7,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
-	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/schema"
+	schema "github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
 )
 
-func TestLoginErrors(t *testing.T) {
+func TestGoogleLoginErrors(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -18,12 +18,8 @@ func TestLoginErrors(t *testing.T) {
 		InputError    error
 	}{
 		{
-			ExpectedError: schema.ErrLoginUserDoesNotExist,
-			InputError:    auth.ErrLoginUserNotFound,
-		},
-		{
-			ExpectedError: schema.ErrLoginUserIDNotSet,
-			InputError:    auth.ErrLoginUserIDNotSet,
+			ExpectedError: schema.ErrGoogleLoginTokenNotSet,
+			InputError:    auth.ErrGoogleLoginTokenNotSet,
 		},
 		{
 			ExpectedError: schema.ErrLoginModel,
@@ -32,7 +28,7 @@ func TestLoginErrors(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		schemaMap := &schema.LoginSchemaMap{}
+		schemaMap := &schema.GoogleLoginSchemaMap{}
 
 		err := schemaMap.ErrorHandler(test.InputError)
 
@@ -41,27 +37,27 @@ func TestLoginErrors(t *testing.T) {
 	}
 }
 
-func TestLoginInputConversion(t *testing.T) {
+func TestGoogleLoginInputConversion(t *testing.T) {
 	t.Parallel()
 
-	input := schema.LoginRequest{
-		UserID: "test",
+	input := schema.GoogleLoginRequest{
+		Token: "test",
 	}
 
 	converted := input.ToModel()
 
-	assert.EqualValues(t, input.UserID, converted.UserID, "expected userID values to be equal")
+	assert.EqualValues(t, input.Token, converted.Token, "expected token values to be equal")
 }
 
-func TestLoginResponseConversion(t *testing.T) {
+func TestGoogleLoginResponseConversion(t *testing.T) {
 	t.Parallel()
 
-	output := auth.LoginResponse{
+	output := auth.GoogleLoginResponse{
 		Token: "token",
 		Name:  "Jhon",
 	}
 
-	schemaMap := &schema.LoginSchemaMap{}
+	schemaMap := &schema.GoogleLoginSchemaMap{}
 
 	converted := schemaMap.Response(&output)
 

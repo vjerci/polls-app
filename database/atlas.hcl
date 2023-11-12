@@ -32,7 +32,7 @@ table "polls" {
   column "name" {
     type = varchar(255)
   }
-  column "data_created" {
+  column "date_created" {
     type = int
   }
   primary_key {
@@ -49,7 +49,7 @@ table "polls" {
 }
 
 
-table "poll_answers" {
+table "answers" {
    schema = schema.public
    column "id" {
     type    = uuid
@@ -66,13 +66,13 @@ table "poll_answers" {
       column.id,
     ]
   }
-  foreign_key "poll_foreign_key" {
+  foreign_key "answers_foreign_key_poll" {
     columns = [column.poll_id]
     ref_columns = [table.polls.column.id]
     on_delete = CASCADE
     on_update = NO_ACTION
   }
-  index "polls_possible_answers_unique_constraint" {
+  index "answers_unique_constraint_id" {
     columns = [
       column.id,
     ]
@@ -80,3 +80,30 @@ table "poll_answers" {
   }
 }
 
+
+table "user_answers" {
+   schema = schema.public
+   column "user_id" {
+    type    = varchar(255)
+  }
+  column "answer_id" {
+    type = uuid
+  }
+  foreign_key "user_answers_fk_user_id" {
+    columns = [column.user_id]
+    ref_columns = [table.users.column.id]
+    on_delete = CASCADE
+    on_update = NO_ACTION
+  }
+  foreign_key "user_answers_fk_answer_id" {
+    columns = [column.answer_id]
+    ref_columns = [table.answers.column.id]
+    on_delete = CASCADE
+    on_update = NO_ACTION
+  }
+  index "user_answers_answer_id" {
+    columns = [
+      column.answer_id,
+    ]
+  }
+}

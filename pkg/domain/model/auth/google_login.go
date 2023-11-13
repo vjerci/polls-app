@@ -3,8 +3,8 @@ package auth
 import (
 	"errors"
 
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/googleauth"
+	"github.com/vjerci/polls-app/pkg/domain/db"
+	"github.com/vjerci/polls-app/pkg/domain/util/googleauth"
 )
 
 type GoogleLoginRequest struct {

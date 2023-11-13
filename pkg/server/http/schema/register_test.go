@@ -6,9 +6,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
+	authmodel "github.com/vjerci/polls-app/pkg/domain/model/auth"
+	"github.com/vjerci/polls-app/pkg/domain/util/auth"
+	"github.com/vjerci/polls-app/pkg/server/http/schema"
 )
 
 func TestRegisterErrors(t *testing.T) {

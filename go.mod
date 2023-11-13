@@ -1,4 +1,4 @@
-module github.com/vjerci/golang-vuejs-sample-app
+module github.com/vjerci/polls-app
 
 go 1.20
 

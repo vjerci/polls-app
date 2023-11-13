@@ -4,17 +4,17 @@ import (
 	"errors"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
+	"github.com/vjerci/polls-app/pkg/config"
+	"github.com/vjerci/polls-app/pkg/domain/db"
+	authmodel "github.com/vjerci/polls-app/pkg/domain/model/auth"
+	"github.com/vjerci/polls-app/pkg/domain/model/poll"
 
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/googleauth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api/middleware"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/router"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
+	"github.com/vjerci/polls-app/pkg/domain/util/auth"
+	"github.com/vjerci/polls-app/pkg/domain/util/googleauth"
+	"github.com/vjerci/polls-app/pkg/server/http/api"
+	"github.com/vjerci/polls-app/pkg/server/http/api/middleware"
+	"github.com/vjerci/polls-app/pkg/server/http/router"
+	"github.com/vjerci/polls-app/pkg/server/http/schema"
 )
 
 var ErrDBConnect = errors.New("failed to connect to database")

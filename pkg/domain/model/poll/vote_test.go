@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
+	"github.com/vjerci/polls-app/pkg/domain/model/poll"
 )
 
 type MockVoteDB struct {

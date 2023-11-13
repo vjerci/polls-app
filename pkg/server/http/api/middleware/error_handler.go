@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
+	"github.com/vjerci/polls-app/pkg/server/http/api"
 )
 
 func (client *Client) ErrorHandler(err error, echoContext echo.Context) {

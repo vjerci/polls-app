@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
+	"github.com/vjerci/polls-app/pkg/domain/model/poll"
+	"github.com/vjerci/polls-app/pkg/server/http/schema"
 )
 
 type PollDetailsModel interface {

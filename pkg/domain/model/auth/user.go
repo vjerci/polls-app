@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
+	"github.com/vjerci/polls-app/pkg/domain/db"
 )
 
 type UserRepository interface {

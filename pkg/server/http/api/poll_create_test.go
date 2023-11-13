@@ -9,9 +9,9 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/schema"
+	"github.com/vjerci/polls-app/pkg/domain/model/poll"
+	"github.com/vjerci/polls-app/pkg/server/http/api"
+	"github.com/vjerci/polls-app/pkg/server/http/schema"
 )
 
 type MockPollCreateModel struct {

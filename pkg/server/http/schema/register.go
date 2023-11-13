@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	authmodel "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
+	authmodel "github.com/vjerci/polls-app/pkg/domain/model/auth"
+	"github.com/vjerci/polls-app/pkg/domain/util/auth"
 )
 
 type RegisterRequest struct {

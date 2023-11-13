@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/app"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
+	"github.com/vjerci/polls-app/pkg/app"
+	"github.com/vjerci/polls-app/pkg/config"
 )
 
 // wait for postgre to come online.

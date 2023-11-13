@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
+	"github.com/vjerci/polls-app/pkg/domain/util/auth"
 )
 
 var signingKey = "y5XYbfKoqOqGa+XVggMZs4yvcE6SwWS9Q9UBZviMw0A="

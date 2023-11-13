@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
-	modelauth "github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/auth"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/util/auth"
+	"github.com/vjerci/polls-app/pkg/domain/db"
+	modelauth "github.com/vjerci/polls-app/pkg/domain/model/auth"
+	"github.com/vjerci/polls-app/pkg/domain/util/auth"
 )
 
 type MockAuthDB struct {

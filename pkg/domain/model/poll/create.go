@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/db"
+	"github.com/vjerci/polls-app/pkg/domain/db"
 )
 
 var CreateMinAnswers = 2

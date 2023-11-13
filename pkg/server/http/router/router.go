@@ -5,7 +5,7 @@ import (
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/config"
+	"github.com/vjerci/polls-app/pkg/config"
 )
 
 type Router struct {

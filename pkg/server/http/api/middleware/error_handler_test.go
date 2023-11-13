@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/server/http/api/middleware"
+	"github.com/vjerci/polls-app/pkg/server/http/api/middleware"
 )
 
 func TestErrorHandling(t *testing.T) {

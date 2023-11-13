@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/vjerci/golang-vuejs-sample-app/pkg/domain/model/poll"
+	"github.com/vjerci/polls-app/pkg/domain/model/poll"
 )
 
 type PollDetailsSchemaMap struct{}

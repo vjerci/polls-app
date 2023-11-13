@@ -4,7 +4,6 @@ services:
     ports:
       - ${HTTP_PORT}:${HTTP_PORT}
     environment:
-      - HTTP_PORT=${HTTP_PORT}
       - JWT_KEY=${JWT_KEY}
       - POSTGRES_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgre:5432/${POSTGRES_DB}
     depends_on:

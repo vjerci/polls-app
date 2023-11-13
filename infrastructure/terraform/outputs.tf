@@ -18,3 +18,8 @@ output "ecr_name" {
   description = "Docker images registry name"
   value       = aws_ecr_repository.polls_images.name
 }
+
+output "ecr_url" {
+  description = "Docker images registry url"
+  value       = aws_ecr_repository.polls_images.repository_url
+}

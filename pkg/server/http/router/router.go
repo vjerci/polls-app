@@ -32,7 +32,7 @@ func (handler *Router) Build() *echo.Echo {
 	router.Use(middleware.Gzip())
 
 	if config.Get().Debug {
-		log.Printf("running server with cors enabled")
+		log.Println("running server with cors enabled")
 
 		//nolint:exhaustivestruct
 		router.Use(middleware.CORSWithConfig(middleware.CORSConfig{

@@ -21,5 +21,14 @@ lint:
 
 db_migrate:
 	atlas schema apply \
-	--url "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}?search_path=public&sslmode=disable" \
+	--url "postgresql://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@localhost:5432/$${POSTGRES_DB}?search_path=public&sslmode=disable" \
 	--to "file://./database/atlas.hcl" \
+
+
+ecr_region = $$(terraform -chdir=infrastructure/terraform/ output -raw region)
+ecr_url = $$(terraform -chdir=infrastructure/terraform/ output -raw ecr_url)
+push_image: 
+	aws ecr get-login-password --region $(ecr_region) | docker login --username AWS --password-stdin $(ecr_url)
+	docker build --tag polls-app:latest .
+	docker tag polls-app:latest $(ecr_url)):polls-app
+	docker push $(ecr_url)):polls-app

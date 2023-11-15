@@ -1,3 +1,15 @@
+provider "aws" {
+  region = var.region
+
+  default_tags {
+    tags = {
+      App        = "polls"
+      Enviroment = var.environment
+    }
+  }
+}
+
+
 terraform {
   required_providers {
     aws = {

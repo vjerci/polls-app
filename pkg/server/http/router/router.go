@@ -2,6 +2,7 @@ package router
 
 import (
 	"log"
+	"net/http"
 
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -46,6 +47,9 @@ func (handler *Router) Build() *echo.Echo {
 		}))
 	}
 
+	router.GET("/healthcheck", func(echoContext echo.Context) error {
+		return echoContext.String(http.StatusOK, "OK")
+	})
 	router.Use(middleware.Static("./front/dist"))
 
 	endpoint := router.Group("/api")

@@ -27,7 +27,7 @@ func main() {
 	}
 
 	log.Println(settings.HTTPPort)
-	err = server.Start(settings.HTTPPort)
+	err = server.Start(":" + settings.HTTPPort)
 	if err != nil {
 		panic(fmt.Errorf("server running error  %w", err))
 	}

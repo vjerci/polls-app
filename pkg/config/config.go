@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"log"
 
 	"github.com/spf13/viper"
 )
@@ -30,7 +31,7 @@ type Config struct {
 func Setup() error {
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")
-	viper.SetConfigType("yml")
+	viper.SetConfigType("yaml")
 
 	viper.AutomaticEnv()
 
@@ -41,6 +42,8 @@ func Setup() error {
 	if err := viper.Unmarshal(&config); err != nil {
 		return errors.Join(ErrUnmarshalConfig, err)
 	}
+
+	log.Println(config.PostgresURL)
 
 	if config.PostgresURL == "" {
 		return ErrPostgresURLEmpty

@@ -8,7 +8,6 @@ import (
 	"github.com/vjerci/polls-app/pkg/domain/db"
 	authmodel "github.com/vjerci/polls-app/pkg/domain/model/auth"
 	"github.com/vjerci/polls-app/pkg/domain/model/poll"
-
 	"github.com/vjerci/polls-app/pkg/domain/util/auth"
 	"github.com/vjerci/polls-app/pkg/domain/util/googleauth"
 	"github.com/vjerci/polls-app/pkg/server/http/api"
@@ -58,7 +57,10 @@ func New(settings config.Config) (*echo.Echo, error) {
 	return routeHandler.Build(), nil
 }
 
-func newModel(dbClient *db.DB, authClient authmodel.AuthRepository, googleAuthClient authmodel.GoogleAuthRepository) *api.Models {
+func newModel(dbClient *db.DB,
+	authClient authmodel.AuthRepository,
+	googleAuthClient authmodel.GoogleAuthRepository,
+) *api.Models {
 	return &api.Models{
 		Login: &authmodel.LoginModel{
 			AuthDB: authClient,

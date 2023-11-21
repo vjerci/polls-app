@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"log"
 
 	"github.com/spf13/viper"
 )
@@ -42,8 +41,6 @@ func Setup() error {
 	if err := viper.Unmarshal(&config); err != nil {
 		return errors.Join(ErrUnmarshalConfig, err)
 	}
-
-	log.Println(config.PostgresURL)
 
 	if config.PostgresURL == "" {
 		return ErrPostgresURLEmpty

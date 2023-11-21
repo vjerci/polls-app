@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/vjerci/polls-app/pkg/app"
@@ -26,7 +25,6 @@ func main() {
 		panic(fmt.Errorf("failed to build server %w", err))
 	}
 
-	log.Println(settings.HTTPPort)
 	err = server.Start(":" + settings.HTTPPort)
 	if err != nil {
 		panic(fmt.Errorf("server running error  %w", err))

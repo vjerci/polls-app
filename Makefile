@@ -39,8 +39,7 @@ infra_deploy:
 	echo "waiting 200s for postgre to come online"
 	sleep 200 
 	make db_migrate_kubernetes
-	echo "Your endpoint is:"
-	kubectl get --no-headers=true ingress | awk -F " " '{print $4}'
+	make get_endpoint
 
 infra_destroy:
 	terraform -chdir=infrastructure/terraform apply -destroy
@@ -102,3 +101,6 @@ db_migrate_kubernetes:
 		--to "file://./database/atlas.hcl" && \
 	kill $$!
 
+get_endpoint:
+	echo "Your endpoint is:"
+	kubectl get --no-headers=true ingress | awk -F " " '{print $$4}'

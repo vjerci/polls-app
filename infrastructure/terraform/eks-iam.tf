@@ -5,12 +5,12 @@ data "aws_iam_policy_document" "lb_assume_role_policy" {
 
     condition {
       test     = "StringEquals"
-      variable = "${replace(aws_iam_openid_connect_provider.eks_oidc_provider.url, "https://", "")}:sub"
+      variable = "${replace(module.eks.oidc_provider, "https://", "")}:sub"
       values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
     }
 
     principals {
-      identifiers = [aws_iam_openid_connect_provider.eks_oidc_provider.arn]
+      identifiers = [module.eks.oidc_provider_arn]
       type        = "Federated"
     }
   }

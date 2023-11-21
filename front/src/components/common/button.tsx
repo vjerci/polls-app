@@ -5,7 +5,7 @@ export default function Button({
 }: {
 	name: string;
 	onClick?: any;
-	className: string;
+	className?: string;
 }) {
 	return (
 		<button

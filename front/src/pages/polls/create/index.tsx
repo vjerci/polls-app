@@ -6,8 +6,9 @@ import Link from "@/components/common/link";
 import LogoutButton from "@/containers/polls/logout_button";
 import PollBreadCrumb from "@/containers/polls/poll_breadcrumb";
 import { useAppDispatch } from "@/store/hooks";
-import { createPoll } from "@/store/reducers/poll_create";
+import { createPoll, selectPollCreateIsLoading } from "@/store/reducers/poll_create";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 interface Answer {
 	name: string;
@@ -17,6 +18,8 @@ interface Answer {
 
 export default function Page() {
 	const dispatch = useAppDispatch();
+
+	const loading = useSelector(selectPollCreateIsLoading);
 
 	const [answers, setAnswers] = useState([
 		{ name: "Answer 1", value: "", error: "" },
@@ -112,6 +115,7 @@ export default function Page() {
 					initPollCreation();
 				}}
 				submitName="Create poll"
+				loading={loading}
 			>
 				<Input
 					placeholder="Poll question"

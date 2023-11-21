@@ -57,3 +57,7 @@ export const pollCreateSlice = createSlice({
 			});
 	},
 });
+
+
+export const selectPollCreateIsLoading = (state: AppState) =>
+	state.pollDetails.loadingState == "loading";

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: api
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: api
+    template:
+        metadata:
+            labels:
+                app: api
+        spec:
+            containers:
+                - name: api
+                  image: "{{.Values.pod.api.repositoryUrl}}:{{.Values.pod.api.dockerTag}}"
+                  imagePullPolicy: Always
+                  ports:
+                      - name: http
+                        containerPort: 80
+                        protocol: TCP
+                  env:
+                      - name: HTTP_PORT
+                        value: "80"
+                      - name: JWT_KEY
+                        value: "{{ .Values.pod.api.JWTKey }}"
+                      - name: POSTGRES_URL
+                        valueFrom:
+                            configMapKeyRef:
+                                name: postgres-config
+                                key: POSTGRES_URL
+                  livenessProbe:
+                      httpGet:
+                          path: /healthcheck
+                          port: http
+                  readinessProbe:
+                      httpGet:
+                          path: /healthcheck
+                          port: http
+                  resources:
+                      requests:
+                          memory: "64Mi"
+                          cpu: "250m"
+                      limits:
+                          cpu: 500m
+                          memory: "128Mi"
+            nodeSelector:
+                polls-app: app

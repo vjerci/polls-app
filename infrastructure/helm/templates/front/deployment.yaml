@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: front
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: front
+    template:
+        metadata:
+            labels:
+                app: front
+        spec:
+            containers:
+                - name: front
+                  image: "{{.Values.pod.front.repositoryUrl}}:{{.Values.pod.front.dockerTag}}"
+                  imagePullPolicy: Always
+                  ports:
+                      - name: http
+                        containerPort: 8080
+                        protocol: TCP
+                  resources:
+                      requests:
+                          memory: "64Mi"
+                          cpu: "250m"
+                      limits:
+                          cpu: 500m
+                          memory: "128Mi"
+            nodeSelector:
+                polls-app: app

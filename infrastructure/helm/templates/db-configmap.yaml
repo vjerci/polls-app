@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: postgres-config
+    labels:
+        app: postgres
+data:
+    POSTGRES_DB: "{{.Values.pod.db.dbName}}"
+    POSTGRES_USER: "{{.Values.pod.db.user}}"
+    POSTGRES_PASSWORD: "{{.Values.pod.db.password}}"
+    POSTGRES_URL: "postgresql://{{.Values.pod.db.user}}:{{.Values.pod.db.password}}@postgres:5432/{{.Values.pod.db.dbName}}"

@@ -54,8 +54,8 @@ func TestPollDetailsResponseConversion(t *testing.T) {
 		UserAnswer: "testUserAnswer",
 		Answers: []poll.DetailsAnswer{
 			{
-				Name:       "answerName1",
 				ID:         "answerID1",
+				Name:       "answerName1",
 				VotesCount: 1,
 			},
 		},

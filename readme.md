@@ -16,6 +16,7 @@ To run this project locally:
 4. Run it using `docker compose up`
 5. Apply db schema migration using atlas `make db_migrate`
     - If you don't have atlas installed you can install it by running `make dep`
+6. visit `http://localhost:1314`
 
 ## Cloud running
 

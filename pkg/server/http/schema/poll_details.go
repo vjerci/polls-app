@@ -18,8 +18,8 @@ type PollDetailsResponse struct {
 }
 
 type PollDetailsAnswer struct {
-	Name       string `json:"name"`
 	ID         string `json:"id"`
+	Name       string `json:"name"`
 	VotesCount int    `json:"votes_count"`
 }
 
@@ -27,15 +27,15 @@ func (mapper *PollDetailsSchemaMap) Response(input *poll.DetailsResponse) *PollD
 	answers := make([]PollDetailsAnswer, len(input.Answers))
 	for i, v := range input.Answers {
 		answers[i] = PollDetailsAnswer{
-			Name:       v.Name,
 			ID:         v.ID,
+			Name:       v.Name,
 			VotesCount: v.VotesCount,
 		}
 	}
 
 	return &PollDetailsResponse{
-		Name:     input.Name,
 		ID:       input.ID,
+		Name:     input.Name,
 		UserVote: input.UserAnswer,
 		Answers:  answers,
 	}

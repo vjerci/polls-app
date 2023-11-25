@@ -100,8 +100,8 @@ func TestPollDetailsSuccessful(t *testing.T) {
 			UserAnswer: "answerID",
 			Answers: []poll.DetailsAnswer{
 				{
-					Name:       "answerName",
 					ID:         "answerID",
+					Name:       "answerName",
 					VotesCount: 2,
 				},
 			},
@@ -126,7 +126,7 @@ func TestPollDetailsSuccessful(t *testing.T) {
 	err := apiClient.PollDetails(echoContext)
 
 	expectedResponse := `{"success":true,"data":{"id":"pollID","name":"pollName","user_vote":"answerID"` +
-		`,"answers":[{"name":"answerName","id":"answerID","votes_count":2}` +
+		`,"answers":[{"id":"answerID","name":"answerName","votes_count":2}` +
 		`]}}` + "\n"
 
 	if err != nil {

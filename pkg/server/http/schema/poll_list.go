@@ -16,16 +16,16 @@ type PollListResponse struct {
 }
 
 type GeneralPollInfo struct {
-	Name string `json:"name"`
 	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 func (mapper *PollListSchemaMap) Response(input *poll.ListResponse) *PollListResponse {
 	polls := make([]GeneralPollInfo, len(input.Polls))
 	for i, v := range input.Polls {
 		polls[i] = GeneralPollInfo{
-			Name: v.Name,
 			ID:   v.ID,
+			Name: v.Name,
 		}
 	}
 

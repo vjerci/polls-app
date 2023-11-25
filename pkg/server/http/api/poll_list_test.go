@@ -94,7 +94,7 @@ func TestPollListSuccessful(t *testing.T) {
 		ResponseError: nil,
 	}
 	expectedResponse := `{"success":true,"data":{"polls":` +
-		`[{"name":"Do you want a lift?","id":"1"},{"name":"do you want a lightning?","id":"2"}]` +
+		`[{"id":"1","name":"Do you want a lift?"},{"id":"2","name":"do you want a lightning?"}]` +
 		`,"has_next":true` + `}}` + "\n"
 
 	req := httptest.NewRequest(echo.POST, "http://localhost/polls_list", strings.NewReader(input))

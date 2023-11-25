@@ -47,12 +47,12 @@ func TestPollListResponseConversion(t *testing.T) {
 	output := poll.ListResponse{
 		Polls: []poll.GeneralInfo{
 			{
-				Name: "test name 1",
 				ID:   "test id 1",
+				Name: "test name 1",
 			},
 			{
-				Name: "test name 2",
 				ID:   "test id 2",
+				Name: "test name 2",
 			},
 		},
 		HasNext: true,

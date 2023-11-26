@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package polls;
 
-option go_package = "github.com/vjerci/polls-app/pkg/server/grpc/proto";
+option go_package = "pkg/server/grpc/proto/poll";
 
 service Polls {
   rpc GetList (GetListRequest) returns (GetListResponse) {}

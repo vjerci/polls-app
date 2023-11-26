@@ -8,10 +8,17 @@ test:
 test_coverage:
 	go test ./... -cover
 
+gen_grpc:
+	protoc --go_out=. \
+		--go-grpc_out=. \
+		pkg/server/grpc/proto/auth.proto \
+		pkg/server/grpc/proto/poll.proto
+
 dep:
 	go mod download
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
 	curl -sSf https://atlasgo.sh | sh
+	cd ./front && npm i
 
 vet:
 	go vet ./...

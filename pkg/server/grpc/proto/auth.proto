@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package polls;
+
+option go_package = "github.com/vjerci/polls-app/pkg/server/grpc/proto";
+
+service Auth {
+  rpc GoogleLogin (GoogleLoginRequest) returns (GoogleLoginResponse) {}
+  rpc Login (LoginRequest) returns (LoginResponse) {}
+  rpc Register (RegisterRequest) returns (RegisterResponse) {}
+}
+
+message GoogleLoginRequest {
+  string token = 1;
+}
+
+message GoogleLoginResponse {
+  string token = 1;
+  string name = 2;
+}
+
+message LoginRequest {
+  string user_id = 1;
+}
+
+message LoginResponse {
+  string token = 1;
+  string name = 2;
+}
+
+message RegisterRequest {
+  string user_id = 1;
+  string name = 2;
+}
+
+message RegisterResponse {
+  string token = 1;
+}

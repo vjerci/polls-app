@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package polls;
+
+option go_package = "github.com/vjerci/polls-app/pkg/server/grpc/proto";
+
+service Polls {
+  rpc GetList (GetListRequest) returns (GetListResponse) {}
+  rpc GetDetails (GetDetailsRequest) returns (GetDetailsResponse) {}
+  rpc Vote (VoteRequest) returns (VoteResponse) {}
+  rpc Create (CreateRequest) returns (CreateResponse) {}
+}
+
+message GetListRequest {
+  int32 page = 1;
+}
+
+message GetListResponse {
+  message PollInfo {
+    string id = 1;
+    string name = 2;
+  }
+  repeated PollInfo polls = 1;
+  bool has_next_page = 2;
+}
+
+message GetDetailsRequest {
+  string id = 1;
+}
+
+message GetDetailsResponse {
+  string id = 1;
+  string name = 2;
+  string user_vote = 3;
+  message Answer {
+    string id = 1;
+    string name = 2;
+    string votes_count = 3;
+  }
+  repeated Answer answers = 4;
+}
+
+message VoteRequest {
+  string poll_id = 1;
+  string answer_id = 2;
+}
+
+message VoteResponse {
+  bool modified_answer = 1;
+}
+
+message CreateRequest {
+  string name = 1;
+  repeated string answers = 2;
+}
+
+message CreateResponse {
+  string id = 1;
+  repeated string answer_ids = 2; 
+}

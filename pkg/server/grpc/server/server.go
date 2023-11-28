@@ -42,15 +42,19 @@ func Build(models *api.Models, schemasMap *SchemasMap, interceptors []grpc.Unary
 
 	server := grpc.NewServer(opts...)
 
-	implementation := &Server{
-		models:                   models,
-		schemas:                  schemasMap,
-		UnimplementedPollsServer: poll.UnimplementedPollsServer{},
-		UnimplementedAuthServer:  auth.UnimplementedAuthServer{},
-	}
+	implementation := NewServer(models, schemasMap)
 
 	poll.RegisterPollsServer(server, implementation)
 	auth.RegisterAuthServer(server, implementation)
 
 	return server
+}
+
+func NewServer(models *api.Models, schemasMap *SchemasMap) *Server {
+	return &Server{
+		models:                   models,
+		schemas:                  schemasMap,
+		UnimplementedPollsServer: poll.UnimplementedPollsServer{},
+		UnimplementedAuthServer:  auth.UnimplementedAuthServer{},
+	}
 }

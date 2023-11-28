@@ -5,6 +5,8 @@ import "github.com/vjerci/polls-app/pkg/domain/util/auth"
 type Client struct {
 	AuthRepo AuthRepo
 	UserRepo UserRepo
+
+	Logger Logger
 }
 
 type AuthRepo interface {

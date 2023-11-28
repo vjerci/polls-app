@@ -31,12 +31,12 @@ func (client *Client) EnsureValidToken(
 
 	metadata, metadataExists := metadata.FromIncomingContext(ctx)
 	if !metadataExists {
-		return nil, schema.ErrAuthInvalid
+		return nil, schema.ErrAuthMissing
 	}
 
 	header, authorizationExists := metadata["authorization"]
 	if !authorizationExists {
-		return nil, schema.ErrAuthInvalid
+		return nil, schema.ErrAuthMissing
 	}
 
 	if len(header) != 1 {

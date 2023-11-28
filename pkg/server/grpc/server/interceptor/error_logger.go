@@ -3,11 +3,14 @@ package interceptor
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
 )
+
+type Logger interface {
+	Printf(format string, v ...any)
+}
 
 func (client *Client) LogErrors(
 	ctx context.Context,
@@ -22,7 +25,7 @@ func (client *Client) LogErrors(
 
 	//nolint:errorlint
 	if httpError, ok := err.(*echo.HTTPError); ok {
-		log.Default().Printf(
+		client.Logger.Printf(
 			`serving grpc error containing non visible details "%s":"%s"`,
 			httpError.Message,
 			httpError.Internal,
@@ -31,7 +34,7 @@ func (client *Client) LogErrors(
 		return resp, fmt.Errorf("%s", httpError.Message)
 	}
 
-	log.Default().Printf(`serving grpc error "%s"`, err)
+	client.Logger.Printf(`serving grpc error "%s"`, err)
 
 	return resp, err
 }

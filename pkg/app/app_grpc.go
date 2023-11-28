@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"log"
 
 	"github.com/vjerci/polls-app/pkg/config"
 	"github.com/vjerci/polls-app/pkg/domain/db"
@@ -36,6 +37,7 @@ func NewGrpc(settings config.Config) (*grpc.Server, error) {
 	interceptorClient := interceptor.Client{
 		AuthRepo: authClient,
 		UserRepo: dbClient,
+		Logger:   log.Default(),
 	}
 
 	interceptors := []grpc.UnaryServerInterceptor{

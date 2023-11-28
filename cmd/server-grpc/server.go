@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"time"
 
 	"github.com/vjerci/polls-app/pkg/app"
@@ -21,14 +22,19 @@ func main() {
 
 	time.Sleep(startupDelay)
 
-	server, err := app.New(settings)
+	lis, err := net.Listen("tcp", ":"+settings.GRPCPort)
+	if err != nil {
+		panic(fmt.Errorf("failed to listen for grpc on port %s", settings.GRPCPort))
+	}
+
+	server, err := app.NewGrpc(settings)
 	if err != nil {
 		panic(fmt.Errorf("failed to build server %w", err))
 	}
 
-	log.Printf("http server listening on port %s", settings.HTTPPort)
+	log.Printf("grpc server listening on port %s", settings.GRPCPort)
 
-	err = server.Start(":" + settings.HTTPPort)
+	err = server.Serve(lis)
 	if err != nil {
 		panic(fmt.Errorf("server running error  %w", err))
 	}

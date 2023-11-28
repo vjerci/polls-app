@@ -35,7 +35,7 @@ message GetDetailsResponse {
   message Answer {
     string id = 1;
     string name = 2;
-    string votes_count = 3;
+    int32 votes_count = 3;
   }
   repeated Answer answers = 4;
 }

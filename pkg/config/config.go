@@ -20,6 +20,7 @@ type Config struct {
 	PostgresURL string `mapstructure:"POSTGRES_URL"`
 
 	HTTPPort string `mapstructure:"HTTP_PORT"`
+	GRPCPort string `mapstructure:"GRPC_PORT"`
 
 	JWTSigningKey  string `mapstructure:"JWT_KEY"`
 	GoogleClientID string `mapstructure:"GOOGLE_CLIENT_ID"`

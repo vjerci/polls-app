@@ -29,6 +29,48 @@ To run this project in cloud:
     - it will use helm to deploy 3 services (front, db/postgre, api) and a single ingress
     - it will connect to db service in order to migrate database schemas
 
+### API
+
+Api is build using common web library called [echo](https://echo.labstack.com/).
+
+There is also a [grpc implementation][pkg/server/grpc].
+
+It contains unit test which provide a decent coverage and enable efficient code scaling.
+
+It follows common best practice of abstracting [database layer](./pkg/domain/db) allowing underlying db to be easily replaced.
+
+It also exposes [public schemas and errors](./pkg/server/http/schema) allowing other software to reuse it.
+
+[API configuration](./pkg/config) is done trough most common library called viper.
+
+It is documented trough [openapi (ex Swagger)](./openapi.yaml) and [proto service definition](./pkg/server/grpc/proto)
+
+Code is structured in a way that enables adding different communication mechanisms such as grpc.
+
+### Front
+
+[Front](./front) is built using [next.js](https://nextjs.org/) and statically compiled.
+
+It uses redux for keeping the state, as well as typescript in order to make the code more scalable.
+
+Some containers and pages use local state to simplify the logic.
+
+Styles are done trough extensible tailwind tailwind classes.
+
+### Infrastructure
+
+Infrastructure is setup using terraform in order to make it repeatable, collaborative and extensible.
+
+1. It can easily support multiple different environments such as development, staging, production
+
+Helm is used to produce kubernetes manifest files encouraging code reuse.
+
+1. Postgre `db` service is meant to scale vertically while `front` and `api` services can scale horizontally (that's why there are 2 node groups)
+2. `db` pod uses ebs in order to make database persistent trough pod upgrades and restarts
+3. Eks cluster is setup in a way that ingress provisions it's own public elb allowing multiple different ingresses to exist
+
+Docker image tagging uses md5 hash of commit instead of `latest` to increase transparency of what code is running in cluster.
+
 ## Directories explanations
 
 This project is organized in the manner of monorepo
@@ -61,6 +103,7 @@ You can find below explanations and overview of project directory structure.
         - contains helm templates used to deploy services on kubernetes cluster
 5. [./pkg](./pkg)
    contains golang rest api app
+
     1. [./pkg/app](./pkg/app)
         - used to perform app initalization
     2. [./pkg/config](./pkg/config)
@@ -73,7 +116,19 @@ You can find below explanations and overview of project directory structure.
             - domain bound business logic
         3. [./pkg/domain/util](./pkg/domain/util)
             - utilities used for api
-    4. [./pkg/server/http](./pkg/server)
+    4. [./pkg/server/grpc](./pkg/server/grpc)
+       contains grpc server logic
+
+        1. [./pkg/server/grpc/mapper](./pkg/server/grpc/mapper)
+            - maps model types to proto generated types
+        2. [./pkg/server/grpc/proto](./pkg/server/grpc/proto)
+            - contains proto file definitions, as well as generated code
+        3. [./pkg/server/grpc/sever](./pkg/server/grpc/sever)
+            - contains grpc concrete implementations
+            1. [./pkg/server/grpc/sever/interceptor](./pkg/server/grpc/sever/interceptor)
+                - contains interceptors for authentication and logging errors
+
+    5. [./pkg/server/http](./pkg/server/http)
        contain http server logic
         1. [./pkg/server/http/api](./pkg/server/http/api)
             - contains all api controllers
@@ -83,46 +138,6 @@ You can find below explanations and overview of project directory structure.
             - contains route mapping
         3. [./pkg/server/http/schema](./pkg/server/http/schema)
             - contains public schemas for api input and outputs as well as possible public errors
-
-### API
-
-Api is build using common web library called [echo](https://echo.labstack.com/).
-
-It contains unit test which provide a decent coverage and enable efficient code scaling.
-
-It follows common best practice of abstracting [database layer](./pkg/domain/db) allowing underlying db to be easily replaced.
-
-It also exposes [public schemas and errors](./pkg/server/http/schema) allowing other software to reuse it.
-
-[API configuration](./pkg/config) is done trough most common library called viper.
-
-It is documented trough [openapi (ex Swagger)](./openapi.yaml)
-
-Code is structured in a way that enables adding different communication mechanisms such as grpc.
-
-### Front
-
-[Front](./front) is built using [next.js](https://nextjs.org/) and statically compiled.
-
-It uses redux for keeping the state, as well as typescript in order to make the code more scalable.
-
-Some containers and pages use local state to simplify the logic.
-
-Styles are done trough extensible tailwind tailwind classes.
-
-### Infrastructure
-
-Infrastructure is setup using terraform in order to make it repeatable, collaborative and extensible.
-
-1. It can easily support multiple different environments such as development, staging, production
-
-Helm is used to produce kubernetes manifest files encouraging code reuse.
-
-1. Postgre `db` service is meant to scale vertically while `front` and `api` services can scale horizontally (that's why there are 2 node groups)
-2. `db` pod uses ebs in order to make database persistent trough pod upgrades and restarts
-3. Eks cluster is setup in a way that ingress provisions it's own public elb allowing multiple different ingresses to exist
-
-Docker image tagging uses md5 hash of commit instead of `latest` to increase transparency of what code is running in cluster.
 
 ### CI/CD
 

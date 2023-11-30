@@ -4,7 +4,7 @@ This project is a demonstration of best practices while building software.
 
 From product side application is a simple app that supports creating account, logging in with existing accounts, logging in with google, browsing polls with pagination, creating polls, and voting on polls.
 
-It utilizes some of the popular technologies like golang REST api, echo, golangci-lint, postgre, atlas db migrations, terraform, docker, helm, make, openapi, typescript, nextjs, react, redux, tailwind, google login.
+It utilizes some of the popular technologies like golang, REST api, grpc, echo, golangci-lint, postgre, atlas db migrations, terraform, docker, helm, make, openapi, typescript, nextjs, react, redux, tailwind, google login.
 
 ## Local running
 
